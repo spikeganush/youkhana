@@ -87,14 +87,16 @@ export function InstagramCard({
           }}
         >
           {thumbnail_url && showVideoThumbnail ? (
-            <Image
-              src={thumbnail_url}
-              alt={caption}
-              width={640}
-              height={640}
-              className="absolute object-contain h-[382.4px] mx-auto"
-              draggable={false}
-            />
+            <div className="absolute flex justify-center w-full h-[382.4px] bg-white">
+              <Image
+                src={thumbnail_url}
+                alt={caption}
+                width={640}
+                height={640}
+                className="absolute object-contain h-[382.4px] mx-auto"
+                draggable={false}
+              />
+            </div>
           ) : null}
           <video
             ref={ref}
