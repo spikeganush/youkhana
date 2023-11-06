@@ -12,6 +12,10 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'scontent-iad3-2.cdninstagram.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'instagram.fsyd5-1.fna.fbcdn.net',
       },
     ],
