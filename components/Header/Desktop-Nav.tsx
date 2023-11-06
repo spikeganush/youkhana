@@ -11,7 +11,7 @@ type DesktopNavProps = {
 export function DesktopNav({ navigation, setMobileMenuOpen }: DesktopNavProps) {
   return (
     <nav
-      className="flex items-center justify-between p-6 lg:px-8 text-slate-100"
+      className="flex items-center justify-between p-6 lg:px-8 text-black"
       aria-label="Global"
     >
       <div className="flex lg:flex-1">
@@ -22,7 +22,7 @@ export function DesktopNav({ navigation, setMobileMenuOpen }: DesktopNavProps) {
       <div className="flex lg:hidden">
         <button
           type="button"
-          className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-50"
+          className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-black"
           onClick={() => setMobileMenuOpen(true)}
         >
           <span className="sr-only">Open main menu</span>
@@ -34,7 +34,7 @@ export function DesktopNav({ navigation, setMobileMenuOpen }: DesktopNavProps) {
           <Link
             key={item.name}
             href={item.href}
-            className="text-lg font-semibold leading-6 text-gray-50"
+            className="text-lg font-semibold leading-6 text-black"
           >
             {item.name}
           </Link>

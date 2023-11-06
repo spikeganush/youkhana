@@ -7,9 +7,9 @@ import { MobileNav } from './Mobile-Nav';
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigation = [
-    { name: 'Home', href: '#' },
-    { name: 'Shop', href: '#' },
-    { name: 'Media', href: '#' },
+    { name: 'Home', href: '/' },
+    { name: 'Shop', href: '/shop' },
+    // { name: 'Media', href: '#' },
     { name: 'Contact', href: '#contact' },
   ];
 

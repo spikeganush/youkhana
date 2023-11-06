@@ -5,7 +5,7 @@ import { Instagram } from '@/components/Instagram/Instagram';
 
 export default function Example() {
   return (
-    <div className="bg-orange-100">
+    <div className="bg-orange-50">
       <Hero />
       <About />
       <Instagram />

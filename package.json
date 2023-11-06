@@ -22,7 +22,7 @@
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
     "react-multi-carousel": "^2.8.4",
-    "resend": "^2.0.0"
+    "resend": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -25,7 +25,7 @@ export const getErrorMessage = (error: unknown): string => {
   return message;
 };
 
-export const formateDate = (timestamp: string): string => {
+export const formatDate = (timestamp: string): string => {
   const date = new Date(timestamp);
   const day = date.getDate();
   const month = date.toLocaleString('default', { month: 'short' });
