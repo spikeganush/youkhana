@@ -1,19 +1,20 @@
 import { instagramMedia } from '@/types/general';
+import { Suspense } from 'react';
+import { InstagramCardsSkeleton } from '../ui/skeletons';
 import { InstagramCarousel } from './instagram-carousel';
+import { fetchInstagramData } from '@/lib/utils';
 
 export async function Instagram() {
-  const data = await fetch(
-    `https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,username,timestamp,permalink,thumbnail_url&access_token=${process.env.INSTAGRAM_TOKEN}`
-  );
-  const json = await data.json();
-  const instagramPosts: instagramMedia[] = json.data;
+  const instagramPosts: instagramMedia[] = await fetchInstagramData();
 
   return (
     <>
       <h1 className="text-center text-gray-700 text-3xl font-medium mb-8">
         Instagram
       </h1>
-      <InstagramCarousel instagramPosts={instagramPosts} />
+      <Suspense fallback={<InstagramCardsSkeleton />}>
+        <InstagramCarousel instagramPosts={instagramPosts} />
+      </Suspense>
     </>
   );
 }

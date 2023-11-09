@@ -3,6 +3,8 @@ import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import { InstagramCard } from './instagram-card';
 import { instagramMedia } from '@/types/general';
+import { Suspense } from 'react';
+import { InstagramCardSkeleton } from '../ui/skeletons';
 
 type InstagramCarouselProps = {
   instagramPosts: instagramMedia[];
@@ -39,17 +41,19 @@ export function InstagramCarousel({ instagramPosts }: InstagramCarouselProps) {
         removeArrowOnDeviceType={['tablet', 'mobile']}
       >
         {instagramPosts.map((post: any) => (
-          <InstagramCard
-            key={post.id}
-            id={post.id}
-            caption={post.caption}
-            mediaType={post.media_type}
-            mediaUrl={post.media_url}
-            userName={post.username}
-            timestamp={post.timestamp}
-            thumbnail_url={post.thumbnail_url}
-            permalink={post.permalink}
-          />
+          <Suspense fallback={<InstagramCardSkeleton />} key={post.id}>
+            <InstagramCard
+              key={post.id}
+              id={post.id}
+              caption={post.caption}
+              mediaType={post.media_type}
+              mediaUrl={post.media_url}
+              userName={post.username}
+              timestamp={post.timestamp}
+              thumbnail_url={post.thumbnail_url}
+              permalink={post.permalink}
+            />
+          </Suspense>
         ))}
       </Carousel>
     </div>

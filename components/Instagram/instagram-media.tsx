@@ -26,6 +26,7 @@ export function InstagramMedia({
   });
 
   const togglePlay = () => {
+    console.log(mediaUrl);
     if (ref.current) {
       if (!videoControls.playing) {
         setVideoControls({
