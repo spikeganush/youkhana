@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
 
 function useVideoControls() {
   const [videoState, setVideoState] = useState({
@@ -9,7 +9,7 @@ function useVideoControls() {
   });
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const togglePlay = useCallback(() => {
+  const togglePlay = () => {
     if (videoRef.current && (!videoState.playing || videoState.paused)) {
       setVideoState({
         ...videoState,
@@ -19,33 +19,28 @@ function useVideoControls() {
       });
       videoRef.current.play();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoState.playing]);
+  };
 
-  const toggleMute = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      e.stopPropagation();
-      if (videoRef.current) {
-        if (videoState.muted) {
-          setVideoState({
-            ...videoState,
-            muted: false,
-          });
-          videoRef.current.muted = false;
-        } else {
-          setVideoState({
-            ...videoState,
-            muted: true,
-          });
-          videoRef.current.muted = true;
-        }
+  const toggleMute = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
+    if (videoRef.current) {
+      if (videoState.muted) {
+        setVideoState({
+          ...videoState,
+          muted: false,
+        });
+        videoRef.current.muted = false;
+      } else {
+        setVideoState({
+          ...videoState,
+          muted: true,
+        });
+        videoRef.current.muted = true;
       }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [videoState.muted]
-  );
+    }
+  };
 
-  const togglePauseEndVideo = useCallback(() => {
+  const togglePauseEndVideo = () => {
     if (videoRef.current) {
       setVideoState({
         ...videoState,
@@ -54,9 +49,9 @@ function useVideoControls() {
       });
       videoRef.current.currentTime = 0;
     }
-  }, [videoState]);
+  };
 
-  const divPauseVideo = useCallback(() => {
+  const divPauseVideo = () => {
     if (videoState.playing && videoRef.current) {
       setVideoState({
         ...videoState,
@@ -65,8 +60,7 @@ function useVideoControls() {
       });
       videoRef.current.pause();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoState.playing]);
+  };
 
   return {
     videoRef,

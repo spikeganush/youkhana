@@ -2,12 +2,12 @@
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import { InstagramCard } from './instagram-card';
-import { instagramMedia } from '@/types/general';
+import { InstagramMedia } from '@/types/general';
 import { Suspense } from 'react';
 import { InstagramCardSkeleton } from '../ui/skeletons';
 
 type InstagramCarouselProps = {
-  instagramPosts: instagramMedia[];
+  instagramPosts: InstagramMedia[];
 };
 
 export function InstagramCarousel({ instagramPosts }: InstagramCarouselProps) {

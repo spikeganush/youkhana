@@ -1,11 +1,11 @@
-import { instagramMedia } from '@/types/general';
+import { InstagramMedia } from '@/types/general';
 import { Suspense } from 'react';
 import { InstagramCardsSkeleton } from '../ui/skeletons';
 import { InstagramCarousel } from './instagram-carousel';
 import { fetchInstagramData } from '@/lib/utils';
 
 export async function Instagram() {
-  const instagramPosts: instagramMedia[] = await fetchInstagramData();
+  const instagramPosts: InstagramMedia[] = await fetchInstagramData();
 
   return (
     <>
