@@ -1,10 +1,8 @@
 'use client';
 
 import { formatDate } from '@/lib/utils';
-
 import Image from 'next/image';
-import { useRef, useState } from 'react';
-import { InstagramMedia } from './instagram-media';
+import InstagramMedia from './instagram-media';
 
 type InstagramCardProps = {
   id: string;
@@ -74,12 +72,13 @@ export function InstagramCard({
           </svg>
         </div> */}
       </header>
-
-      <InstagramMedia
-        mediaType={mediaType}
-        mediaUrl={mediaUrl}
-        thumbnail_url={thumbnail_url}
-      />
+      <div className="relative w-full">
+        <InstagramMedia
+          mediaType={mediaType}
+          mediaUrl={mediaUrl}
+          thumbnail_url={thumbnail_url}
+        />
+      </div>
 
       <section className="flex flex-col p-4 gap-3">
         <div className="text-sm min-h-[60px]">

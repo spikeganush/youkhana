@@ -1,155 +1,91 @@
+'use client';
+
 import {
   PauseCircleIcon,
   PlayCircleIcon,
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
 } from '@heroicons/react/24/outline';
-import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useState, memo } from 'react';
+import { InstagramImage } from './instagram-image';
+import useVideoControls from '@/hooks/useVideoControls';
 
 type instagramMediaProps = {
   mediaType: 'VIDEO' | 'IMAGE' | 'CAROUSEL_ALBUM';
   mediaUrl: string;
   thumbnail_url?: string;
 };
-export function InstagramMedia({
+
+const InstagramMedia = ({
   mediaType,
   mediaUrl,
   thumbnail_url,
-}: instagramMediaProps) {
-  const ref = useRef<HTMLVideoElement>(null);
-  const [videoControls, setVideoControls] = useState({
-    playing: false,
-    paused: false,
-    muted: true,
-    showThumbnail: true,
-  });
-
-  const togglePlay = () => {
-    console.log(mediaUrl);
-    if (ref.current) {
-      if (!videoControls.playing) {
-        setVideoControls({
-          ...videoControls,
-          playing: true,
-          paused: false,
-          showThumbnail: false,
-        });
-        ref.current.play();
-      }
-
-      if (videoControls.paused) {
-        setVideoControls({
-          ...videoControls,
-          playing: true,
-          paused: false,
-          showThumbnail: false,
-        });
-        ref.current.play();
-      }
-    }
-  };
-
-  const toggleMute = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    e.stopPropagation();
-    if (ref.current) {
-      if (videoControls.muted) {
-        setVideoControls({
-          ...videoControls,
-          muted: false,
-        });
-        ref.current.muted = false;
-      } else {
-        setVideoControls({
-          ...videoControls,
-          muted: true,
-        });
-        ref.current.muted = true;
-      }
-    }
-  };
-
-  const togglePauseEndVideo = () => {
-    if (ref.current) {
-      setVideoControls({
-        ...videoControls,
-        playing: false,
-        paused: false,
-      });
-      ref.current.currentTime = 0;
-    }
-  };
-
-  const divPauseVideo = () => {
-    if (videoControls.playing && ref.current) {
-      setVideoControls({
-        ...videoControls,
-        playing: false,
-        paused: true,
-      });
-      ref.current.pause();
-    }
-  };
+}: instagramMediaProps) => {
+  const {
+    videoRef,
+    videoState,
+    divPauseVideo,
+    toggleMute,
+    togglePauseEndVideo,
+    togglePlay,
+  } = useVideoControls();
+  const [imageLoading, setImageLoading] = useState(true);
 
   return (
     <>
       {mediaType === 'IMAGE' || mediaType === 'CAROUSEL_ALBUM' ? (
-        <Image
-          src={mediaUrl}
-          alt={'Instagram media'}
-          width={640}
-          height={640}
-          className="object-contain w-full h-[382.4px]"
-          draggable={false}
+        <InstagramImage
+          url={mediaUrl}
+          imageLoading={imageLoading}
+          setImageLoading={setImageLoading}
         />
       ) : (
         <div className="relative" onClick={divPauseVideo}>
-          {thumbnail_url && videoControls.showThumbnail ? (
+          {thumbnail_url && videoState.showThumbnail ? (
             <div className="absolute flex justify-center w-full h-[382.4px] bg-white">
-              <Image
-                src={thumbnail_url}
-                alt={'Instagram media'}
-                width={640}
-                height={640}
-                className="absolute object-contain h-[382.4px] mx-auto"
-                draggable={false}
+              <InstagramImage
+                url={thumbnail_url}
+                imageLoading={imageLoading}
+                setImageLoading={setImageLoading}
               />
             </div>
           ) : null}
           <video
-            ref={ref}
+            ref={videoRef}
             className="w-full h-[382.4px]"
             src={mediaUrl}
             draggable={false}
-            muted={videoControls.muted}
+            muted={videoState.muted}
             onEnded={togglePauseEndVideo}
           />
           <div className="absolute flex justify-center items-center inset-0">
-            {!videoControls.playing ? (
-              <div
+            {!videoState.playing ? (
+              <button
+                aria-label={videoState.paused ? 'Play' : 'Pause'}
                 className="flex justify-center items-center w-10 h-10 bg-black/30 rounded-full hover:cursor-pointer"
                 onClick={togglePlay}
               >
-                {!videoControls.paused ? (
+                {!videoState.paused ? (
                   <PlayCircleIcon className="w-10 h-10 text-white" />
                 ) : null}
-                {videoControls.paused ? (
+                {videoState.paused ? (
                   <PauseCircleIcon className="w-10 h-10 text-white" />
                 ) : null}
-              </div>
+              </button>
             ) : null}
             <div className="absolute flex justify-center items-center bottom-2 right-2 z-10">
-              {videoControls.playing ? (
-                <div
+              {videoState.playing ? (
+                <button
+                  aria-label={videoState.muted ? 'Unmute' : 'Mute'}
                   className="flex justify-center items-center w-6 h-6 bg-black/60 rounded-full hover:cursor-pointer"
                   onClick={toggleMute}
                 >
-                  {videoControls.muted ? (
+                  {videoState.muted ? (
                     <SpeakerXMarkIcon className="w-4 h-4 text-white" />
                   ) : (
                     <SpeakerWaveIcon className="w-4 h-4 text-white" />
                   )}
-                </div>
+                </button>
               ) : null}
             </div>
           </div>
@@ -157,4 +93,6 @@ export function InstagramMedia({
       )}
     </>
   );
-}
+};
+
+export default memo(InstagramMedia);

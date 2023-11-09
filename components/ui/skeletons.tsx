@@ -1,4 +1,4 @@
-const shimmer =
+export const shimmer =
   'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
 
 export function InstagramCardSkeleton() {
@@ -28,7 +28,7 @@ export function InstagramCardSkeleton() {
 
 export function InstagramCardsSkeleton() {
   return (
-    <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3 grid-rows-1">
       <InstagramCardSkeleton />
       <InstagramCardSkeleton />
       <InstagramCardSkeleton />
