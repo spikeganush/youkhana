@@ -10,6 +10,7 @@ export const productsQuery = gql`
           handle
           tags
           description
+          availableForSale
           priceRange {
             minVariantPrice {
               amount
