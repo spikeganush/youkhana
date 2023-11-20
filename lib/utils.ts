@@ -39,7 +39,7 @@ export async function fetchInstagramData() {
       `https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,username,timestamp,permalink,thumbnail_url&access_token=${process.env.INSTAGRAM_TOKEN}`,
       {
         next: {
-          revalidate: 86400,
+          revalidate: 3600,
         },
       }
     );

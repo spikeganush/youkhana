@@ -29,3 +29,40 @@ export const productsQuery = gql`
     }
   }
 `;
+
+export const singleProductQuery = gql`
+  query SingleProduct($handle: String!) {
+    productByHandle(handle: $handle) {
+      title
+      description
+      updatedAt
+      tags
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      images(first: 6) {
+        edges {
+          node {
+            url
+            altText
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const mutationCheckoutCreate = gql`
+  mutation CheckoutCreate($variantId: ID!) {
+    checkoutCreate(
+      input: { lineItems: { variantId: $variantId, quantity: 1 } }
+    ) {
+      checkout {
+        webUrl
+      }
+    }
+  }
+`;

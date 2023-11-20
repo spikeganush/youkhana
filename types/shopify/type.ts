@@ -263,3 +263,17 @@ export type ShopifyProductsOperation = {
     sortKey?: string;
   };
 };
+
+export type ShopifyMutationCheckoutCreateOperation = {
+  data: {
+    checkoutCreate: {
+      checkout: {
+        id: string;
+        webUrl: string;
+      };
+    };
+  };
+  variables: {
+    variantId: string;
+  };
+};

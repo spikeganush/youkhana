@@ -5,11 +5,11 @@ import { Instagram } from '@/components/Instagram/Instagram';
 
 export default function Example() {
   return (
-    <div className="bg-slate-50">
+    <>
       <Hero />
       <About />
       <Instagram />
       <Contact />
-    </div>
+    </>
   );
 }
