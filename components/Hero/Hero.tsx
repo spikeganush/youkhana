@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import ImageSelection from './Image-Selection';
 
 export function Hero() {
   return (
@@ -14,14 +15,7 @@ export function Hero() {
           </p>
         </div>
       </div>
-      <Image
-        className="w-full h-[900px] object-cover"
-        src="/images/test1.png"
-        alt="hero"
-        width={1920}
-        height={1080}
-        quality={100}
-      />
+      <ImageSelection />
     </section>
   );
 }
