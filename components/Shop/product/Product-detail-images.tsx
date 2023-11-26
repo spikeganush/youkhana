@@ -4,8 +4,10 @@ import { shimmer } from '@/components/ui/skeletons';
 import { Image as ImageType, Product } from '@/types/shopify/type';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function ProductDetailImages({ product }: { product: Product }) {
+  const router = useRouter();
   const [imageSelected, setImageSelected] = useState<string>(
     product?.images[0].url
   );
@@ -26,6 +28,30 @@ export default function ProductDetailImages({ product }: { product: Product }) {
 
   return (
     <div className="max-w-2xl">
+      <div className="sm:px-6">
+        <button
+          type="button"
+          className="relative inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700"
+          onClick={() => router.back()}
+        >
+          <svg
+            className="flex-shrink-0 h-5 w-5 text-gray-400"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            aria-hidden="true"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10.707 3.293a1 1 0 010 1.414L7.414 9H17a1
+              1 0 110 2H7.414l3.293 3.293a1 1 0 01-1.414
+              1.414l-5-5a1 1 0 010-1.414l5-5a1 1 0
+              011.414 0z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <span className="sr-only">Back to Shop</span>
+        </button>
+      </div>
       <div className="mx-auto mt-6 max-w-2xl sm:px-6">
         <div className="relative block overflow-hidden rounded-lg w-full aspect-square md:w-[624px] md:y-[624px]">
           {mainImageLoading && (

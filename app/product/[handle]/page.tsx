@@ -9,7 +9,6 @@ export default async function Product({
 }) {
   const { handle } = params;
   const product = await getSingleHandleProduct(handle);
-  console.log(product);
 
   if (!product) {
     return <div>Product not found</div>;
