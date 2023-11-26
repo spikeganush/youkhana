@@ -13,12 +13,12 @@ type InstagramCarouselProps = {
 export function InstagramCarousel({ instagramPosts }: InstagramCarouselProps) {
   const responsive = {
     desktop: {
-      breakpoint: { max: 3000, min: 1024 },
+      breakpoint: { max: 3000, min: 1300 },
       items: 3,
       slidesToSlide: 3, // optional, default to 1.
     },
     tablet: {
-      breakpoint: { max: 1024, min: 464 },
+      breakpoint: { max: 1300, min: 464 },
       items: 2,
       slidesToSlide: 2, // optional, default to 1.
     },
@@ -37,7 +37,7 @@ export function InstagramCarousel({ instagramPosts }: InstagramCarouselProps) {
         infinite
         keyBoardControl
         transitionDuration={500}
-        containerClass="container"
+        containerClass="container mx-auto"
         removeArrowOnDeviceType={['tablet', 'mobile']}
       >
         {instagramPosts.map((post: any) => (
