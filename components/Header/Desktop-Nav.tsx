@@ -15,9 +15,9 @@ export function DesktopNav({ navigation, setMobileMenuOpen }: DesktopNavProps) {
       aria-label="Global"
     >
       <div className="flex lg:flex-1">
-        <a href="#" className="-m-1.5 p-1.5">
+        <Link href="/" className="-m-1.5 p-1.5">
           <span className="uppercase font-bold">Youkhana.</span>
-        </a>
+        </Link>
       </div>
       <div className="flex lg:hidden">
         <button

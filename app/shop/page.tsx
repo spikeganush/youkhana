@@ -1,4 +1,5 @@
 import ProductsCard from '@/components/Shop/Products-Card';
+import SearchBar from '@/components/Shop/Search-Bar';
 import { getProducts } from '@/lib/shopify';
 
 export default async function Shop() {
