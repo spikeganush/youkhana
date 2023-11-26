@@ -1,3 +1,4 @@
+import Contact from '@/components/Contact/contact';
 import ProductDetailImages from '@/components/Shop/product/Product-detail-images';
 import PurchaseButton from '@/components/Shop/product/Purchase-button';
 import { getSingleHandleProduct } from '@/lib/shopify';
@@ -37,7 +38,7 @@ export default async function Product({
             </p>
           </div>
 
-          <div className="py-10 lg:col-span-2 lg:col-start-1 lg:pb-16 lg:pr-8 lg:pt-6">
+          <div className="py-10 lg:col-span-2 lg:col-start-1 lg:pb-8 lg:pr-8 lg:pt-6">
             {/* Description and details */}
             <div>
               <h3 className="sr-only">Description</h3>
@@ -54,9 +55,13 @@ export default async function Product({
 
             <div className="mt-10">
               {/* Purchase button */}
-              <PurchaseButton id={product.variants[0].id} />
+              <PurchaseButton
+                id={product.variants[0].id}
+                available={product.availableForSale}
+              />
             </div>
           </div>
+          <Contact productTitle={product.title} />
         </div>
       </div>
     </div>

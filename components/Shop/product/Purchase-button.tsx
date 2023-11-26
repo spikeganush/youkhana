@@ -4,7 +4,13 @@ import { getMutationCheckout } from '@/lib/shopify';
 import { useState } from 'react';
 import { useFormState } from 'react-dom';
 
-export default function PurchaseButton({ id }: { id: string }) {
+export default function PurchaseButton({
+  id,
+  available,
+}: {
+  id: string;
+  available: boolean;
+}) {
   const [loading, setLoading] = useState(false);
   const [state, formAction] = useFormState(getMutationCheckout, {
     error: '',
@@ -22,7 +28,7 @@ export default function PurchaseButton({ id }: { id: string }) {
       <button
         className="w-full bg-gray-900 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-gray-500 duration-150"
         type="submit"
-        disabled={loading}
+        disabled={loading || !available}
       >
         {loading && (
           <svg
@@ -46,7 +52,7 @@ export default function PurchaseButton({ id }: { id: string }) {
             ></path>
           </svg>
         )}
-        {loading ? 'Processing' : 'Purchase now'}
+        {loading ? 'Processing' : available ? 'Purchase' : 'Sold Out'}
       </button>
     </form>
   );

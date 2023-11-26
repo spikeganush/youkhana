@@ -9,7 +9,7 @@ export default function Example() {
       <Hero />
       <About />
       <Instagram />
-      <Contact />
+      <Contact mainPage />
     </>
   );
 }
