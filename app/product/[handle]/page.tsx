@@ -9,6 +9,7 @@ export default async function Product({
 }) {
   const { handle } = params;
   const product = await getSingleHandleProduct(handle);
+  console.log(product);
 
   if (!product) {
     return <div>Product not found</div>;
@@ -28,7 +29,7 @@ export default async function Product({
             </h1>
           </div>
 
-          {/* Options */}
+          {/* Price */}
           <div className="mt-4 lg:row-span-3 lg:mt-0">
             <h2 className="sr-only">Product information</h2>
             <p className="text-3xl tracking-tight text-gray-900">

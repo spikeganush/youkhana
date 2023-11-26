@@ -37,7 +37,7 @@ export async function shopifyFetch<T>({
   try {
     if (!domain || !key || !endpoint)
       throw new Error('Missing Shopify API credentials');
-    console.log({ query, variables });
+
     const result = await fetch(endpoint, {
       method: 'POST',
       headers: {
