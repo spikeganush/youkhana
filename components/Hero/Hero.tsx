@@ -14,15 +14,15 @@ export function Hero() {
           </p>
         </div>
       </div>
-      <Image
-        className="w-full h-[500px] max-[390px]:h-[400px] md:h-[900px] min-[2200px]:h-[1300px] object-cover object-right"
-        src="/images/hero__desktop.webp"
-        alt="Youkhana art"
-        width={1920}
-        height={1080}
-        priority={true}
-        quality={100}
-      />
+      <div className="max-[390px]:-mr-8 max-[340px]:-mr-16">
+        <Image
+          className="w-full h-[500px] md:h-[900px] min-[2200px]:h-[1300px] object-cover object-right"
+          src="/images/hero__desktop.webp"
+          alt="Youkhana art"
+          width={1920}
+          height={1080}
+        />
+      </div>
     </section>
   );
 }
