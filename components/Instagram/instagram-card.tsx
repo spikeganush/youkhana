@@ -32,24 +32,17 @@ export function InstagramCard({
     alt: string;
   };
 
-  const ProfilePicture = ({ src, alt }: ProfilePictureProps) => (
-    <Image
-      src={src}
-      width={50}
-      height={50}
-      className="rounded-full w-10 h-10"
-      alt={alt}
-      draggable={false}
-    />
-  );
-
   return (
     <div className="bg-white border-gray-300 w-80 mx-auto md:w-96 border rounded-lg">
       <header className="grid grid-cols-6 items-center p-3 border-b border-b-gray-300">
         <div>
-          <ProfilePicture
-            src="https://instagram.fsyd5-1.fna.fbcdn.net/v/t51.2885-19/315353411_209610284791397_7692960964948794448_n.jpg?stp=dst-jpg_s320x320&_nc_ht=instagram.fsyd5-1.fna.fbcdn.net&_nc_cat=105&_nc_ohc=ZVOOSCYcFeAAX_lLGvF&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_AfD5GlDt04cNYfkHzKCFbMTd3ee94mC8iUpuPhGmpM_F8Q&oe=654D8E9F&_nc_sid=8b3546"
+          <Image
+            src="/images/youkhana-instagram__pp.jpg"
+            width={50}
+            height={50}
+            className="rounded-full w-10 h-10"
             alt="Youkhana Instagram Profile Picture"
+            draggable={false}
           />
         </div>
 
