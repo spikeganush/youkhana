@@ -1,4 +1,4 @@
-export type instagramMedia = {
+export type InstagramMedia = {
   id: string;
   media_url: string;
   media_type: string;

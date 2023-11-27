@@ -2,21 +2,23 @@
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import { InstagramCard } from './instagram-card';
-import { instagramMedia } from '@/types/general';
+import { InstagramMedia } from '@/types/general';
+import { Suspense } from 'react';
+import { InstagramCardSkeleton } from '../ui/skeletons';
 
 type InstagramCarouselProps = {
-  instagramPosts: instagramMedia[];
+  instagramPosts: InstagramMedia[];
 };
 
 export function InstagramCarousel({ instagramPosts }: InstagramCarouselProps) {
   const responsive = {
     desktop: {
-      breakpoint: { max: 3000, min: 1024 },
+      breakpoint: { max: 3000, min: 1300 },
       items: 3,
       slidesToSlide: 3, // optional, default to 1.
     },
     tablet: {
-      breakpoint: { max: 1024, min: 464 },
+      breakpoint: { max: 1300, min: 464 },
       items: 2,
       slidesToSlide: 2, // optional, default to 1.
     },
@@ -35,21 +37,23 @@ export function InstagramCarousel({ instagramPosts }: InstagramCarouselProps) {
         infinite
         keyBoardControl
         transitionDuration={500}
-        containerClass="container"
+        containerClass="container mx-auto"
         removeArrowOnDeviceType={['tablet', 'mobile']}
       >
         {instagramPosts.map((post: any) => (
-          <InstagramCard
-            key={post.id}
-            id={post.id}
-            caption={post.caption}
-            mediaType={post.media_type}
-            mediaUrl={post.media_url}
-            userName={post.username}
-            timestamp={post.timestamp}
-            thumbnail_url={post.thumbnail_url}
-            permalink={post.permalink}
-          />
+          <Suspense fallback={<InstagramCardSkeleton />} key={post.id}>
+            <InstagramCard
+              key={post.id}
+              id={post.id}
+              caption={post.caption}
+              mediaType={post.media_type}
+              mediaUrl={post.media_url}
+              userName={post.username}
+              timestamp={post.timestamp}
+              thumbnail_url={post.thumbnail_url}
+              permalink={post.permalink}
+            />
+          </Suspense>
         ))}
       </Carousel>
     </div>

@@ -25,10 +25,46 @@ export const getErrorMessage = (error: unknown): string => {
   return message;
 };
 
-export const formateDate = (timestamp: string): string => {
+export const formatDate = (timestamp: string): string => {
   const date = new Date(timestamp);
   const day = date.getDate();
   const month = date.toLocaleString('default', { month: 'short' });
   const year = date.getFullYear();
   return `${day} ${month} ${year}`;
 };
+
+export async function fetchInstagramData() {
+  try {
+    const data = await fetch(
+      `https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,username,timestamp,permalink,thumbnail_url&access_token=${process.env.INSTAGRAM_TOKEN}`,
+      {
+        next: {
+          revalidate: 3600,
+        },
+      }
+    );
+    const json = await data.json();
+    return json.data;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
+
+export function debounce<F extends (...args: any[]) => void>(
+  func: F,
+  waitFor: number
+) {
+  let timeout: NodeJS.Timeout | null = null;
+
+  const debounced = (...args: Parameters<F>) => {
+    if (timeout !== null) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => func(...args), waitFor);
+  };
+
+  return debounced as (...args: Parameters<F>) => ReturnType<F>;
+}
+
+export default debounce;

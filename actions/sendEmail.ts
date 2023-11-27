@@ -1,6 +1,6 @@
 'use server';
 
-import React from 'react';
+import { createElement } from 'react';
 import { Resend } from 'resend';
 import { validateString, getErrorMessage } from '@/lib/utils';
 import ContactFormEmail from '@/email/contact-form-email';
@@ -30,7 +30,7 @@ export const sendEmail = async (formData: FormData) => {
       to: 'yyoukhanaa@gmail.com',
       subject: 'Message from Youkhana website contact form',
       reply_to: senderEmail,
-      react: React.createElement(ContactFormEmail, {
+      react: createElement(ContactFormEmail, {
         message: message,
         senderEmail: senderEmail,
       }),

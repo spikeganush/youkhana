@@ -8,11 +8,15 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'scontent.cdninstagram.com',
+        hostname: '**.cdninstagram.com',
       },
       {
         protocol: 'https',
-        hostname: 'instagram.fsyd5-1.fna.fbcdn.net',
+        hostname: '**.fbcdn.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.shopify.com',
       },
     ],
   },

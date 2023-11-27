@@ -1,17 +1,27 @@
 'use client';
 
-import React from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { sendEmail } from '@/actions/sendEmail';
 import toast from 'react-hot-toast';
 import SectionHeading from '@/components/General/section-heading';
 import SubmitBtn from '@/components/General/submit-btn';
 
-const Contact = () => {
+type ContactProps = {
+  mainPage?: boolean;
+  productTitle?: string;
+};
+
+const Contact = ({ mainPage, productTitle }: ContactProps) => {
+  const [message, setMessage] = useState(
+    productTitle ? `Enquiry about the product ${productTitle}...` : ''
+  );
+
   return (
     <motion.section
       id="contact"
-      className="mx-auto pb-20 sm:pb-28 px-6 md:max-w-2xl text-center"
+      className={`text-center 
+      ${mainPage ? 'mx-auto pb-20 sm:pb-28 px-6 md:max-w-2xl' : 'lg:pr-8'} `}
       initial={{
         opacity: 0,
       }}
@@ -25,15 +35,17 @@ const Contact = () => {
         once: true,
       }}
     >
-      <SectionHeading>Contact me</SectionHeading>
+      <SectionHeading>{mainPage ? 'Contact me' : 'Enquiry'}</SectionHeading>
 
-      <p className="text-gray-700">
-        Please contact me directly at{' '}
-        <a className="underline" href="mailto:yyoukhanaa@gmail.com">
-          yyoukhanaa@gmail.com
-        </a>{' '}
-        or through this form.
-      </p>
+      {mainPage && (
+        <p className="text-gray-700">
+          Please contact me directly at{' '}
+          <a className="underline" href="mailto:yyoukhanaa@gmail.com">
+            yyoukhanaa@gmail.com
+          </a>{' '}
+          or through this form.
+        </p>
+      )}
 
       <form
         className="mt-10 flex flex-col"
@@ -72,6 +84,8 @@ const Contact = () => {
           placeholder="Your message"
           required
           maxLength={5000}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
         />
         <SubmitBtn />
       </form>
