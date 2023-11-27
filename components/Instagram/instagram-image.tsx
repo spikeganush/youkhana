@@ -29,6 +29,7 @@ export function InstagramImage({
         draggable={false}
         onLoad={() => setImageLoading(true)}
         onLoadingComplete={() => setImageLoading(false)}
+        unoptimized
       />
     </>
   );

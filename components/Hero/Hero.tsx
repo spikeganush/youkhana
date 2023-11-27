@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import ImageSelection from './Image-Selection';
 
 export function Hero() {
   return (
@@ -15,7 +14,15 @@ export function Hero() {
           </p>
         </div>
       </div>
-      <ImageSelection />
+      <Image
+        className="w-full h-[500px] max-[390px]:h-[400px] md:h-[900px] min-[2200px]:h-[1300px] object-cover object-right"
+        src="/images/hero__desktop.webp"
+        alt="Youkhana art"
+        width={1920}
+        height={1080}
+        priority={true}
+        quality={100}
+      />
     </section>
   );
 }
