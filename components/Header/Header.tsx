@@ -13,7 +13,7 @@ export function Header() {
     { name: 'Home', href: '/' },
     { name: 'Shop', href: '/shop' },
     // { name: 'Media', href: '#' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'Contact', href: '/#contact' },
   ];
 
   useMotionValueEvent(scrollY, 'change', (latestScrollY) => {
