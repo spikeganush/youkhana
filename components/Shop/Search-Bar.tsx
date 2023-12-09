@@ -197,7 +197,7 @@ const SearchBar = ({
           </div>
         </div>
         <AnimatePresence>
-          {inputValue && suggestions.length > 0 && (
+          {inputValue && suggestions && suggestions.length > 0 && (
             <motion.ul
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -250,7 +250,7 @@ const SearchBar = ({
             </span>
           ))}
       </div>
-      {selectedTags.length > 0 && (
+      {selectedTags && selectedTags.length > 0 && (
         <button onClick={resetTags} className="mt-3">
           Reset Tags
         </button>

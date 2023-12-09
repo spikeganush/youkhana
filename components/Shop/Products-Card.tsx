@@ -48,7 +48,7 @@ export default function ProductsCard({ products }: { products: Product[] }) {
     let updatedProducts = products;
 
     // Filter products by selected tags
-    if (selectedTags.length > 0) {
+    if (selectedTags && selectedTags.length > 0) {
       updatedProducts = updatedProducts.filter((product) =>
         product.tags.some((tag) => selectedTags.includes(tag.toLowerCase()))
       );
