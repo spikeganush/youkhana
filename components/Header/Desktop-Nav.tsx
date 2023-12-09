@@ -30,15 +30,16 @@ export function DesktopNav({ navigation, setMobileMenuOpen }: DesktopNavProps) {
         </button>
       </div>
       <div className="hidden lg:flex lg:gap-x-12">
-        {navigation.map((item) => (
-          <Link
-            key={item.name}
-            href={item.href}
-            className="text-lg font-semibold leading-6 text-black"
-          >
-            {item.name}
-          </Link>
-        ))}
+        {navigation &&
+          navigation.map((item) => (
+            <Link
+              key={item.name}
+              href={item.href}
+              className="text-lg font-semibold leading-6 text-black"
+            >
+              {item.name}
+            </Link>
+          ))}
       </div>
     </nav>
   );

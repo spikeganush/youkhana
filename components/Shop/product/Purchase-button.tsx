@@ -18,8 +18,16 @@ export default function PurchaseButton({
   });
 
   if (state.webUrl) {
-    // Open a new tab with the checkout URL
-    window.open(state.webUrl, '_blank');
+    // if not a safari browser, open the checkout in a new tab
+    if (
+      typeof window !== 'undefined' &&
+      !navigator.userAgent.includes('Safari')
+    ) {
+      window.open(state.webUrl, '_blank');
+    } else {
+      // if safari, open the checkout in the same tab
+      window.location.href = state.webUrl;
+    }
   }
 
   return (

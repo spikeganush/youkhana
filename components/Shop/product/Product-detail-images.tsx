@@ -11,9 +11,11 @@ export default function ProductDetailImages({ product }: { product: Product }) {
   const [imageSelected, setImageSelected] = useState<string>(
     product?.images[0].url
   );
-  const imagesNoneSelected = product?.images
-    .filter((image: ImageType) => image.url !== imageSelected)
-    .map((image: ImageType) => image.url);
+  const imagesNoneSelected =
+    product?.images &&
+    product?.images
+      .filter((image: ImageType) => image.url !== imageSelected)
+      .map((image: ImageType) => image.url);
 
   const [mainImageLoading, setMainImageLoading] = useState(true);
   // A useState of the imagesNoneSelected loading state with the url as the key
