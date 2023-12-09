@@ -40,21 +40,22 @@ export function InstagramCarousel({ instagramPosts }: InstagramCarouselProps) {
         containerClass="container mx-auto"
         removeArrowOnDeviceType={['tablet', 'mobile']}
       >
-        {instagramPosts.map((post: any) => (
-          <Suspense fallback={<InstagramCardSkeleton />} key={post.id}>
-            <InstagramCard
-              key={post.id}
-              id={post.id}
-              caption={post.caption}
-              mediaType={post.media_type}
-              mediaUrl={post.media_url}
-              userName={post.username}
-              timestamp={post.timestamp}
-              thumbnail_url={post.thumbnail_url}
-              permalink={post.permalink}
-            />
-          </Suspense>
-        ))}
+        {instagramPosts &&
+          instagramPosts.map((post: any) => (
+            <Suspense fallback={<InstagramCardSkeleton />} key={post.id}>
+              <InstagramCard
+                key={post.id}
+                id={post.id}
+                caption={post.caption}
+                mediaType={post.media_type}
+                mediaUrl={post.media_url}
+                userName={post.username}
+                timestamp={post.timestamp}
+                thumbnail_url={post.thumbnail_url}
+                permalink={post.permalink}
+              />
+            </Suspense>
+          ))}
       </Carousel>
     </div>
   );

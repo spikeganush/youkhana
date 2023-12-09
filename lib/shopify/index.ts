@@ -88,6 +88,8 @@ const removeEdgesAndNodes = (array: Connection<any>) => {
 const reshapeImages = (images: Connection<Image>, productTitle: string) => {
   const flattened = removeEdgesAndNodes(images);
 
+  if (!flattened) return [];
+
   return flattened.map((image) => {
     const filename = image.url.match(/.*\/(.*)\..*/)[1];
     return {

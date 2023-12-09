@@ -205,48 +205,50 @@ const SearchBar = ({
               transition={{ duration: 0.3 }}
               className="absolute w-40 z-10 bg-white border border-gray-300 rounded-md mt-1"
             >
-              {suggestions.map((tag, index) => (
-                <li
-                  key={index}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => {
-                    addTag(tag);
-                    setInputValue('');
-                  }}
-                >
-                  {tag}
-                </li>
-              ))}
+              {suggestions &&
+                suggestions.map((tag, index) => (
+                  <li
+                    key={index}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      addTag(tag);
+                      setInputValue('');
+                    }}
+                  >
+                    {tag}
+                  </li>
+                ))}
             </motion.ul>
           )}
         </AnimatePresence>
       </div>
       <div className="flex flex-wrap gap-2 mt-3">
-        {selectedTags.map((tag, index) => (
-          <span
-            key={index}
-            className="chip px-4 py-2 bg-slate-300 rounded-xl hover:bg-slate-200 cursor-pointer"
-            onClick={() => removeTag(tag)}
-          >
-            {tag}{' '}
-            <button>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-4 h-4"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </span>
-        ))}
+        {selectedTags &&
+          selectedTags.map((tag, index) => (
+            <span
+              key={index}
+              className="chip px-4 py-2 bg-slate-300 rounded-xl hover:bg-slate-200 cursor-pointer"
+              onClick={() => removeTag(tag)}
+            >
+              {tag}{' '}
+              <button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-4 h-4"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </span>
+          ))}
       </div>
       {selectedTags.length > 0 && (
         <button onClick={resetTags} className="mt-3">
