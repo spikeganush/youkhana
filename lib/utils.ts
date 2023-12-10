@@ -42,9 +42,7 @@ export async function fetchInstagramData() {
     const data = await fetch(
       `https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,username,timestamp,permalink,thumbnail_url&access_token=${process.env.INSTAGRAM_TOKEN}`,
       {
-        next: {
-          revalidate: 3600,
-        },
+        cache: 'no-store',
       }
     );
     const json = await data.json();

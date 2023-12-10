@@ -27,8 +27,8 @@ export function InstagramImage({
         height={640}
         className="object-contain w-full h-[382.4px]"
         draggable={false}
-        onLoad={() => setImageLoading(true)}
-        onLoadingComplete={() => setImageLoading(false)}
+        loading="lazy"
+        onLoad={() => setImageLoading(false)}
         unoptimized
       />
     </>
