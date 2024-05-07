@@ -49,7 +49,7 @@ export async function fetchInstagramData() {
     }
     return json.data;
   } catch (error) {
-    console.log(error);
+    console.log(process.env.INSTAGRAM_TOKEN, error);
     return [];
   }
 }
