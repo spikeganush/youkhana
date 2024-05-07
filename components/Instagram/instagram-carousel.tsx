@@ -30,33 +30,35 @@ export function InstagramCarousel({ instagramPosts }: InstagramCarouselProps) {
   };
 
   return (
-    <div className="px-6 lg:px-8">
-      <Carousel
-        showDots={false}
-        responsive={responsive}
-        infinite
-        keyBoardControl
-        transitionDuration={500}
-        containerClass="container mx-auto"
-        removeArrowOnDeviceType={['tablet', 'mobile']}
-      >
-        {instagramPosts &&
-          instagramPosts.map((post: any) => (
-            <Suspense fallback={<InstagramCardSkeleton />} key={post.id}>
-              <InstagramCard
-                key={post.id}
-                id={post.id}
-                caption={post.caption}
-                mediaType={post.media_type}
-                mediaUrl={post.media_url}
-                userName={post.username}
-                timestamp={post.timestamp}
-                thumbnail_url={post.thumbnail_url}
-                permalink={post.permalink}
-              />
-            </Suspense>
-          ))}
-      </Carousel>
+    <div className='px-6 lg:px-8'>
+      {instagramPosts?.length > 0 && (
+        <Carousel
+          showDots={false}
+          responsive={responsive}
+          infinite
+          keyBoardControl
+          transitionDuration={500}
+          containerClass='container mx-auto'
+          removeArrowOnDeviceType={['tablet', 'mobile']}
+        >
+          {instagramPosts &&
+            instagramPosts.map((post: any) => (
+              <Suspense fallback={<InstagramCardSkeleton />} key={post.id}>
+                <InstagramCard
+                  key={post.id}
+                  id={post.id}
+                  caption={post.caption}
+                  mediaType={post.media_type}
+                  mediaUrl={post.media_url}
+                  userName={post.username}
+                  timestamp={post.timestamp}
+                  thumbnail_url={post.thumbnail_url}
+                  permalink={post.permalink}
+                />
+              </Suspense>
+            ))}
+        </Carousel>
+      )}
     </div>
   );
 }

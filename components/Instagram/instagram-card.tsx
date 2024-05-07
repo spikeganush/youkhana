@@ -33,20 +33,20 @@ export function InstagramCard({
   };
 
   return (
-    <div className="bg-white border-gray-300 w-80 mx-auto md:w-96 border rounded-lg">
-      <header className="grid grid-cols-6 items-center p-3 border-b border-b-gray-300">
+    <div className='bg-white border-gray-300 w-80 mx-auto md:w-96 border rounded-lg'>
+      <header className='grid grid-cols-6 items-center p-3 border-b border-b-gray-300'>
         <div>
           <Image
-            src="/images/youkhana-instagram__pp.jpg"
+            src='/images/youkhana-instagram__pp.jpg'
             width={50}
             height={50}
-            className="rounded-full w-10 h-10"
-            alt="Youkhana Instagram Profile Picture"
+            className='rounded-full w-10 h-10'
+            alt='Youkhana Instagram Profile Picture'
             draggable={false}
           />
         </div>
 
-        <div className="col-span-4 text-sm font-semibold">{userName}</div>
+        <div className='col-span-4 text-sm font-semibold'>{userName}</div>
 
         {/* <div className="">
           <svg
@@ -65,7 +65,7 @@ export function InstagramCard({
           </svg>
         </div> */}
       </header>
-      <div className="relative w-full">
+      <div className='relative w-full'>
         <InstagramMedia
           mediaType={mediaType}
           mediaUrl={mediaUrl}
@@ -73,19 +73,19 @@ export function InstagramCard({
         />
       </div>
 
-      <section className="flex flex-col p-4 gap-3">
-        <div className="text-sm min-h-[60px]">
+      <section className='flex flex-col p-4 gap-3'>
+        <div className='text-sm min-h-[60px]'>
           {caption
-            ? caption.length > 100
+            ? caption?.length > 100
               ? caption.slice(0, 100) + '...'
               : caption
             : null}
         </div>
 
-        <div className="flex justify-between">
-          <div className="text-gray-400 text-xs">{formatedDate}</div>
-          <div className="text-gray-400 text-xs">
-            <a href={permalink} target="_blank" rel="noopener noreferrer">
+        <div className='flex justify-between'>
+          <div className='text-gray-400 text-xs'>{formatedDate}</div>
+          <div className='text-gray-400 text-xs'>
+            <a href={permalink} target='_blank' rel='noopener noreferrer'>
               Link to the post
             </a>
           </div>

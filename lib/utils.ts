@@ -1,12 +1,10 @@
+import { sendEmail } from '@/actions/sendEmail';
+
 export const validateString = (
   value: unknown,
   maxLength: number
 ): value is string => {
-  if (
-    !value ||
-    typeof value !== 'string' ||
-    (value && value.length > maxLength)
-  ) {
+  if (!value || typeof value !== 'string' || value?.length > maxLength) {
     return false;
   }
 
@@ -46,6 +44,9 @@ export async function fetchInstagramData() {
       }
     );
     const json = await data.json();
+    if (json.error) {
+      throw new Error(json.error.message);
+    }
     return json.data;
   } catch (error) {
     console.log(error);
