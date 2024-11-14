@@ -4,7 +4,7 @@ import { Product } from '@/types/shopify/type';
 import React, { useState, useEffect, useRef } from 'react';
 import { OrderByAndDirectionType } from './Products-Card';
 import { AnimatePresence, motion } from 'framer-motion';
-import debounce from '@/lib/utils';
+import { debounce } from '@/lib/utils';
 
 type SearchBarProps = {
   products: Product[];

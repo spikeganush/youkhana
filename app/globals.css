@@ -9,3 +9,11 @@ html {
 .borderBlack {
   @apply border border-black/10;
 }
+
+.handle-p p {
+  margin-bottom: 1rem;
+}
+
+.handle-p p:last-child {
+  margin-bottom: 0;
+}

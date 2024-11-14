@@ -78,4 +78,22 @@ export function debounce<F extends (...args: any[]) => void>(
   return debounced as (...args: Parameters<F>) => ReturnType<F>;
 }
 
-export default debounce;
+// app/utils/cleanHtml.ts
+export function cleanHtml(html: string) {
+  if (!html) return '';
+
+  return (
+    html
+      // Remove space after paragraph opening tag
+      .replace(/<p>\s+/g, '<p>')
+      // Remove space after span opening tag
+      .replace(/<span>\s+/g, '<span>')
+      // Remove space between p and span tags
+      .replace(/<p([^>]*)>\s+<span/g, '<p$1><span')
+      // Clean multiple spaces between words (optional)
+      .replace(/\s{2,}/g, ' ')
+      // Remove trailing spaces before closing tags (optional)
+      .replace(/\s+<\/span>/g, '</span>')
+      .replace(/\s+<\/p>/g, '</p>')
+  );
+}

@@ -20,12 +20,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang='en' suppressHydrationWarning={true}>
       <body className={`bg-slate-50 ${inter.className}`}>
         <Header />
         {children}
         <Footer />
-        <Toaster position="top-right" />
+        <Toaster position='top-right' />
         <SpeedInsights />
       </body>
     </html>
