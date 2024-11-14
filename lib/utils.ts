@@ -1,4 +1,6 @@
 import { sendEmail } from '@/actions/sendEmail';
+import { redis } from './redist';
+import { get } from 'http';
 
 export const validateString = (
   value: unknown,
@@ -37,8 +39,14 @@ export const formatDate = (timestamp: string): string => {
 
 export async function fetchInstagramData() {
   try {
+    const getToken = await redis.get('instagram_token');
+    if (!getToken) {
+      throw new Error('No Instagram token found');
+    }
+    console.log(getToken);
+    const token = getToken || process.env.INSTAGRAM_TOKEN;
     const data = await fetch(
-      `https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,username,timestamp,permalink,thumbnail_url&access_token=${process.env.INSTAGRAM_TOKEN}`,
+      `https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,username,timestamp,permalink,thumbnail_url&access_token=${token}`,
       {
         cache: 'no-store',
       }
