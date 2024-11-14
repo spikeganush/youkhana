@@ -15,6 +15,14 @@ const ProductOptions = ({ product }: { product: Product }) => {
       const url = `?color=${product.options[0].values[0]}&size=${product.options[1].values[0]}`;
       router.replace(url, { scroll: false });
     }
+    if (selectedColor && !product.options[0].values.includes(selectedColor)) {
+      const url = `?color=${product.options[0].values[0]}&size=${selectedSize}`;
+      router.replace(url, { scroll: false });
+    }
+    if (selectedSize && !product.options[1].values.includes(selectedSize)) {
+      const url = `?color=${selectedColor}&size=${product.options[1].values[0]}`;
+      router.replace(url, { scroll: false });
+    }
   }, [selectedColor, selectedSize, searchParams, product.options, router]);
   return (
     <>
