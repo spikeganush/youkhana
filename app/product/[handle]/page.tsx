@@ -19,7 +19,6 @@ export default async function Product({
 
   const htmlDescription = cleanHtml(product.descriptionHtml);
 
-  console.log(product.options);
   return (
     <div className='px-6'>
       <div className='pt-20 flex flex-col md:flex-row justify-center'>
