@@ -43,7 +43,7 @@ export async function fetchInstagramData() {
     if (!getToken) {
       throw new Error('No Instagram token found');
     }
-    console.log(getToken);
+
     const token = getToken || process.env.INSTAGRAM_TOKEN;
     const data = await fetch(
       `https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,username,timestamp,permalink,thumbnail_url&access_token=${token}`,

@@ -172,7 +172,7 @@ export async function getSingleHandleProduct(handle: string) {
 
 export async function getMutationCheckout(prevState: any, formData: FormData) {
   const variantId = formData.get('variantId') as string;
-  console.log(variantId);
+
   if (!variantId) {
     throw new Error('Missing variantId');
   }
