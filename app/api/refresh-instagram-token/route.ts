@@ -48,7 +48,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: 'Token refreshed successfully',
+      message: `Token refreshed successfully, new token: ${data.access_token}, previous token: ${currentToken}`,
       expiresIn: data.expires_in,
     });
   } catch (error) {
