@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 
-const siteConfig = {
+export const siteConfig = {
   name: 'Youkhana',
   description: 'Youkhana is a Sydney based designer that specialises in making one of a kind garments for the bold and diverse community in which we live in today',
   url: 'https://youkhana.info',
@@ -109,5 +109,3 @@ export const constructMetadata = ({
   icons: defaultMetadata.icons,
   manifest: defaultMetadata.manifest,
 })
-
-export default siteConfig
