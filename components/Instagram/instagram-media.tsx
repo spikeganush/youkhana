@@ -6,23 +6,17 @@ import {
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
 } from '@heroicons/react/24/outline';
-import { useState, memo } from 'react';
+import { useState } from 'react';
 import { InstagramImage } from './instagram-image';
 import useVideoControls from '@/hooks/useVideoControls';
+import { InstagramMediaProps } from '@/types/instagram';
 
-type instagramMediaProps = {
-  mediaType: 'VIDEO' | 'IMAGE' | 'CAROUSEL_ALBUM';
-  mediaUrl: string;
-  thumbnail_url?: string;
-  priority?: boolean;
-};
-
-const InstagramMedia = ({
+export function InstagramMedia({
   mediaType,
   mediaUrl,
   thumbnail_url,
   priority = false,
-}: instagramMediaProps) => {
+}: InstagramMediaProps) {
   const {
     videoRef,
     videoState,
@@ -58,32 +52,32 @@ const InstagramMedia = ({
             className="w-full h-[382.4px]"
             src={mediaUrl}
             draggable={false}
-            muted={videoState.muted}
+            muted={videoState.isMuted}
             onEnded={togglePauseEndVideo}
           />
           <div className="absolute flex justify-center items-center inset-0">
-            {!videoState.playing ? (
+            {!videoState.isPlaying ? (
               <button
-                aria-label={videoState.paused ? 'Play' : 'Pause'}
+                aria-label={videoState.isPaused ? 'Play' : 'Pause'}
                 className="flex justify-center items-center w-10 h-10 bg-black/30 rounded-full hover:cursor-pointer"
                 onClick={togglePlay}
               >
-                {!videoState.paused ? (
+                {!videoState.isPaused ? (
                   <PlayCircleIcon className="w-10 h-10 text-white" />
                 ) : null}
-                {videoState.paused ? (
+                {videoState.isPaused ? (
                   <PauseCircleIcon className="w-10 h-10 text-white" />
                 ) : null}
               </button>
             ) : null}
             <div className="absolute flex justify-center items-center bottom-2 right-2 z-10">
-              {videoState.playing ? (
+              {videoState.isPlaying ? (
                 <button
-                  aria-label={videoState.muted ? 'Unmute' : 'Mute'}
+                  aria-label={videoState.isMuted ? 'Unmute' : 'Mute'}
                   className="flex justify-center items-center w-6 h-6 bg-black/60 rounded-full hover:cursor-pointer"
                   onClick={toggleMute}
                 >
-                  {videoState.muted ? (
+                  {videoState.isMuted ? (
                     <SpeakerXMarkIcon className="w-4 h-4 text-white" />
                   ) : (
                     <SpeakerWaveIcon className="w-4 h-4 text-white" />
@@ -98,4 +92,4 @@ const InstagramMedia = ({
   );
 };
 
-export default memo(InstagramMedia);
+export default InstagramMedia;

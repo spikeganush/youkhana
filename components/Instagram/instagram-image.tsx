@@ -1,29 +1,22 @@
 import Image from 'next/image';
 import { shimmer } from '../ui/skeletons';
-import { Dispatch, SetStateAction } from 'react';
-
-type instagramMediaProps = {
-  url: string;
-  imageLoading: boolean;
-  setImageLoading: Dispatch<SetStateAction<boolean>>;
-  priority?: boolean;
-};
+import { InstagramImageProps } from '@/types/instagram';
 
 export function InstagramImage({
-  url: mediaUrl,
+  url,
   imageLoading,
   setImageLoading,
   priority = false,
-}: instagramMediaProps) {
+}: InstagramImageProps) {
   return (
     <>
-      {mediaUrl && imageLoading ? (
+      {url && imageLoading ? (
         <div
           className={`${shimmer} absolute overflow-hidden flex justify-center w-full h-[382.4px] bg-gray-200`}
         />
       ) : null}
       <Image
-        src={mediaUrl}
+        src={url}
         alt={'Instagram media'}
         width={640}
         height={640}

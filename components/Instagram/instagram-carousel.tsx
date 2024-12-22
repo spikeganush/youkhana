@@ -2,9 +2,9 @@
 
 import dynamic from 'next/dynamic';
 import { InstagramCard } from './instagram-card';
-import { InstagramMedia } from '@/types/general';
 import { Suspense } from 'react';
 import { InstagramCardSkeleton } from '../ui/skeletons';
+import { InstagramCarouselProps } from '@/types/instagram';
 import 'react-multi-carousel/lib/styles.css';
 
 // Dynamically import carousel to reduce initial bundle size
@@ -13,29 +13,25 @@ const Carousel = dynamic(() => import('react-multi-carousel'), {
   ssr: false,
 });
 
-type InstagramCarouselProps = {
-  instagramPosts: InstagramMedia[];
+const responsive = {
+  desktop: {
+    breakpoint: { max: 3000, min: 1300 },
+    items: 3,
+    slidesToSlide: 3,
+  },
+  tablet: {
+    breakpoint: { max: 1300, min: 464 },
+    items: 2,
+    slidesToSlide: 2,
+  },
+  mobile: {
+    breakpoint: { max: 464, min: 0 },
+    items: 1,
+    slidesToSlide: 1,
+  },
 };
 
 export function InstagramCarousel({ instagramPosts }: InstagramCarouselProps) {
-  const responsive = {
-    desktop: {
-      breakpoint: { max: 3000, min: 1300 },
-      items: 3,
-      slidesToSlide: 3,
-    },
-    tablet: {
-      breakpoint: { max: 1300, min: 464 },
-      items: 2,
-      slidesToSlide: 2,
-    },
-    mobile: {
-      breakpoint: { max: 464, min: 0 },
-      items: 1,
-      slidesToSlide: 1,
-    },
-  };
-
   return (
     <div className='px-6 lg:px-8'>
       {instagramPosts?.length > 0 && (

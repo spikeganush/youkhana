@@ -3,18 +3,7 @@
 import { formatDate } from '@/lib/utils';
 import Image from 'next/image';
 import InstagramMedia from './instagram-media';
-
-type InstagramCardProps = {
-  id: string;
-  caption: string;
-  mediaType: 'VIDEO' | 'IMAGE' | 'CAROUSEL_ALBUM';
-  mediaUrl: string;
-  userName: string;
-  timestamp: string;
-  permalink: string;
-  thumbnail_url?: string;
-  priority?: boolean;
-};
+import { InstagramCardProps } from '@/types/instagram';
 
 export function InstagramCard({
   id,
