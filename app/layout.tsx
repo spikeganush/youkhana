@@ -5,14 +5,11 @@ import { Toaster } from 'react-hot-toast';
 import { Header } from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { defaultMetadata } from './seo.config';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'Youkhana',
-  description:
-    'Youkhana is a Sydney based designer that specialises in making one of a kind garments for the bold and diverse community in which we live in today',
-};
+export const metadata: Metadata = defaultMetadata;
 
 export default function RootLayout({
   children,
