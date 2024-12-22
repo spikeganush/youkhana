@@ -6,12 +6,14 @@ type instagramMediaProps = {
   url: string;
   imageLoading: boolean;
   setImageLoading: Dispatch<SetStateAction<boolean>>;
+  priority?: boolean;
 };
 
 export function InstagramImage({
   url: mediaUrl,
   imageLoading,
   setImageLoading,
+  priority = false,
 }: instagramMediaProps) {
   return (
     <>
@@ -27,7 +29,7 @@ export function InstagramImage({
         height={640}
         className="object-contain w-full h-[382.4px]"
         draggable={false}
-        loading="lazy"
+        loading={priority ? 'eager' : 'lazy'}
         onLoad={() => setImageLoading(false)}
         unoptimized
       />

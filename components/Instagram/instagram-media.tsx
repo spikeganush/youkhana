@@ -14,12 +14,14 @@ type instagramMediaProps = {
   mediaType: 'VIDEO' | 'IMAGE' | 'CAROUSEL_ALBUM';
   mediaUrl: string;
   thumbnail_url?: string;
+  priority?: boolean;
 };
 
 const InstagramMedia = ({
   mediaType,
   mediaUrl,
   thumbnail_url,
+  priority = false,
 }: instagramMediaProps) => {
   const {
     videoRef,
@@ -47,6 +49,7 @@ const InstagramMedia = ({
                 url={thumbnail_url}
                 imageLoading={imageLoading}
                 setImageLoading={setImageLoading}
+                priority
               />
             </div>
           ) : null}

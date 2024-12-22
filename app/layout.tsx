@@ -6,8 +6,12 @@ import { Header } from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { defaultMetadata } from './seo.config';
+import { Suspense } from 'react';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap'  // Optimize font loading
+});
 
 export const metadata: Metadata = defaultMetadata;
 
@@ -20,10 +24,12 @@ export default function RootLayout({
     <html lang='en' suppressHydrationWarning={true}>
       <body className={`bg-slate-50 ${inter.className}`}>
         <Header />
-        {children}
+        <main>{children}</main>
         <Footer />
-        <Toaster position='top-right' />
-        <SpeedInsights />
+        <Suspense fallback={null}>
+          <Toaster position='top-right' />
+          <SpeedInsights />
+        </Suspense>
       </body>
     </html>
   );

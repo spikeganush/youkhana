@@ -1,10 +1,17 @@
 'use client';
-import Carousel from 'react-multi-carousel';
-import 'react-multi-carousel/lib/styles.css';
+
+import dynamic from 'next/dynamic';
 import { InstagramCard } from './instagram-card';
 import { InstagramMedia } from '@/types/general';
 import { Suspense } from 'react';
 import { InstagramCardSkeleton } from '../ui/skeletons';
+import 'react-multi-carousel/lib/styles.css';
+
+// Dynamically import carousel to reduce initial bundle size
+const Carousel = dynamic(() => import('react-multi-carousel'), {
+  loading: () => <InstagramCardSkeleton />,
+  ssr: false,
+});
 
 type InstagramCarouselProps = {
   instagramPosts: InstagramMedia[];
@@ -15,17 +22,17 @@ export function InstagramCarousel({ instagramPosts }: InstagramCarouselProps) {
     desktop: {
       breakpoint: { max: 3000, min: 1300 },
       items: 3,
-      slidesToSlide: 3, // optional, default to 1.
+      slidesToSlide: 3,
     },
     tablet: {
       breakpoint: { max: 1300, min: 464 },
       items: 2,
-      slidesToSlide: 2, // optional, default to 1.
+      slidesToSlide: 2,
     },
     mobile: {
       breakpoint: { max: 464, min: 0 },
       items: 1,
-      slidesToSlide: 1, // optional, default to 1.
+      slidesToSlide: 1,
     },
   };
 
@@ -42,7 +49,7 @@ export function InstagramCarousel({ instagramPosts }: InstagramCarouselProps) {
           removeArrowOnDeviceType={['tablet', 'mobile']}
         >
           {instagramPosts &&
-            instagramPosts.map((post: any) => (
+            instagramPosts.map((post: any, index) => (
               <Suspense fallback={<InstagramCardSkeleton />} key={post.id}>
                 <InstagramCard
                   key={post.id}
@@ -54,6 +61,7 @@ export function InstagramCarousel({ instagramPosts }: InstagramCarouselProps) {
                   timestamp={post.timestamp}
                   thumbnail_url={post.thumbnail_url}
                   permalink={post.permalink}
+                  priority={index < 3} // Prioritize first 3 images
                 />
               </Suspense>
             ))}

@@ -13,6 +13,7 @@ type InstagramCardProps = {
   timestamp: string;
   permalink: string;
   thumbnail_url?: string;
+  priority?: boolean;
 };
 
 export function InstagramCard({
@@ -24,6 +25,7 @@ export function InstagramCard({
   timestamp,
   permalink,
   thumbnail_url,
+  priority = false,
 }: InstagramCardProps) {
   const formatedDate = formatDate(timestamp);
 
