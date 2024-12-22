@@ -21,6 +21,7 @@ export function Hero() {
           alt="Youkhana art"
           width={1920}
           height={1080}
+          quality={100}
           priority
         />
       </div>
