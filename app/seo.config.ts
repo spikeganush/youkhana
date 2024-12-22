@@ -8,9 +8,9 @@ export const siteConfig = {
   links: {
     instagram: 'https://www.instagram.com/__youkhana__/', 
   }
-}
+} as const;
 
-export const defaultMetadata: Metadata = {
+export const defaultMetadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
     default: siteConfig.name,
@@ -56,13 +56,10 @@ export const defaultMetadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
   manifest: '/site.webmanifest',
-}
+} satisfies Metadata;
 
-export const constructMetadata = ({
-  title = {
-    absolute: siteConfig.name,
-    template: `%s | ${siteConfig.name}`,
-  },
+export function constructMetadata({
+  title = siteConfig.name,
   description = siteConfig.description,
   image = siteConfig.ogImage,
   noIndex = false,
@@ -71,41 +68,40 @@ export const constructMetadata = ({
   description?: string
   image?: string
   noIndex?: boolean
-} = {}): Metadata => ({
-  metadataBase: defaultMetadata.metadataBase,
-  title,
-  description,
-  openGraph: {
-    ...defaultMetadata.openGraph,
-    title: typeof title === 'string' ? title : title?.absolute,
+} = {}): Metadata {
+  return {
+    ...defaultMetadata,
+    title,
     description,
-    images: [
-      {
-        url: image,
-        width: 1200,
-        height: 630,
-        alt: typeof title === 'string' ? title : title?.absolute,
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    ...defaultMetadata.twitter,
-    title: typeof title === 'string' ? title : title?.absolute,
-    description,
-    images: [image],
-  },
-  robots: {
-    index: !noIndex,
-    follow: !noIndex,
-    googleBot: {
+    openGraph: {
+      ...defaultMetadata.openGraph,
+      title: typeof title === 'string' ? title : title?.absolute,
+      description,
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: typeof title === 'string' ? title : title?.absolute,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: typeof title === 'string' ? title : title?.absolute,
+      description,
+      images: [image],
+    },
+    robots: {
       index: !noIndex,
       follow: !noIndex,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      googleBot: {
+        index: !noIndex,
+        follow: !noIndex,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
-  },
-  icons: defaultMetadata.icons,
-  manifest: defaultMetadata.manifest,
-})
+  }
+}

@@ -3,8 +3,9 @@ import Contact from '@/components/Contact/contact';
 import { About } from '@/components/About/About';
 import { Instagram } from '@/components/Instagram/Instagram';
 import JsonLd from '@/components/JsonLd';
-import { siteConfig, constructMetadata } from './seo.config';
-import { Metadata } from 'next';
+import { siteConfig } from './seo.config';
+import { constructMetadata } from './seo.config';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = constructMetadata({
   title: 'Home',
