@@ -19,7 +19,7 @@ type ErrorResponse = {
 
 export async function POST(request: Request) {
   try {
-    const authHeader = headers().get('authorization');
+    const authHeader = (await headers()).get('authorization');
     const webhookSecret = process.env.CONVEX_WEBHOOK_SECRET;
 
     // Better environment variable validation
