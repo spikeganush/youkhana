@@ -1,7 +1,7 @@
 'use client';
 
 import { Product } from '@/types/shopify/type';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { OrderByAndDirectionType } from './Products-Card';
 import { AnimatePresence, motion } from 'framer-motion';
 import { debounce } from '@/lib/utils';
@@ -24,12 +24,11 @@ const SearchBar = ({
   setOrderByAndDirection,
 }: SearchBarProps) => {
   const [inputValue, setInputValue] = useState('');
-  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [optionOpen, setOptionOpen] = useState(false);
   const optionRef = useRef<HTMLDivElement>(null);
   const iconOpenRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const suggestions = useMemo(() => {
     if (inputValue) {
       let listTags: Set<string> = new Set();
 
@@ -37,17 +36,14 @@ const SearchBar = ({
         product.tags.forEach((tag) => listTags.add(tag));
       });
       const allTags: string[] = Array.from(listTags);
-      const filteredSuggestions = allTags.filter(
+      return allTags.filter(
         (tag) =>
           tag.toLowerCase().includes(inputValue.toLowerCase()) &&
           !selectedTags.includes(tag)
       );
-      setSuggestions(filteredSuggestions);
-    } else {
-      setSuggestions([]);
     }
-    //eslint-disable-next-line
-  }, [inputValue, selectedTags]);
+    return [];
+  }, [inputValue, selectedTags, products]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -164,15 +160,16 @@ const SearchBar = ({
                 />
               </svg>
             </button>
-            {optionOpen && (
-              <motion.div
-                ref={optionRef}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 5 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ duration: 0.3 }}
-                className='absolute -left-28 w-40 z-10 bg-white border border-gray-300 rounded-md mt-1'
-              >
+            <AnimatePresence>
+              {optionOpen && (
+                <motion.div
+                  ref={optionRef}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 5 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.3 }}
+                  className='absolute -left-28 w-40 z-10 bg-white border border-gray-300 rounded-md mt-1'
+                >
                 <div className='flex flex-col gap-1'>
                   <div className='flex justify-between px-4 py-2 hover:bg-gray-100 cursor-pointer'>
                     <span>Sort By</span>
@@ -192,8 +189,9 @@ const SearchBar = ({
                     </button>
                   </div>
                 </div>
-              </motion.div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
         <AnimatePresence>

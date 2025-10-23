@@ -1,7 +1,7 @@
 'use client';
 
 import { getMutationCheckout } from '@/lib/shopify';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFormState } from 'react-dom';
 import { useSearchParams } from 'next/navigation';
 import { ProductVariant } from '@/types/shopify/type';
@@ -18,8 +18,8 @@ export default function PurchaseButton({
   const selectedColor = searchParams.get('color');
   const selectedSize = searchParams.get('size');
   const [state, formAction] = useFormState(getMutationCheckout, {
-    error: '',
-    success: false,
+    id: '',
+    webUrl: '',
   });
 
   // Find the correct variant based on selected options
@@ -31,18 +31,20 @@ export default function PurchaseButton({
     })
   );
 
-  if (state.webUrl) {
-    // if not a safari browser, open the checkout in a new tab
-    if (
-      typeof window !== 'undefined' &&
-      !navigator.userAgent.includes('Safari')
-    ) {
-      window.open(state.webUrl, '_blank');
-    } else {
-      // if safari, open the checkout in the same tab
-      window.location.href = state.webUrl;
+  useEffect(() => {
+    if (state.webUrl) {
+      // if not a safari browser, open the checkout in a new tab
+      if (
+        typeof window !== 'undefined' &&
+        !navigator.userAgent.includes('Safari')
+      ) {
+        window.open(state.webUrl, '_blank');
+      } else {
+        // if safari, open the checkout in the same tab
+        window.location.href = state.webUrl;
+      }
     }
-  }
+  }, [state.webUrl]);
 
   return (
     <form action={formAction}>
