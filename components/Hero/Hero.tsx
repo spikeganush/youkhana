@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import Image from "next/image";
 
 export function Hero() {
   return (
@@ -10,13 +10,17 @@ export function Hero() {
           </h2>
 
           <p className="mt-6 text-lg leading-8 text-black italic">
-            Australian label blurring the line between fashion, art and gender.
+            Youkhana is a sustainable fashion label creating couture
+            hand-crafted pieces alongside a ready-to-wear jersey collection.
+            Each design celebrates simplicity, comfort, and conscious
+            craftsmanship, blending sculptural forms with effortless
+            wearability.
           </p>
         </div>
       </div>
       <div className="max-[390px]:-mr-8 max-[340px]:-mr-16">
         <Image
-          className="w-full h-[500px] md:h-[900px] min-[2200px]:h-[1300px] object-cover object-right"
+          className="w-full h-[500px] md:h-[900px] min-[2200px]:h-[1300px] object-cover object-center lg:object-contain"
           src="/images/hero__desktop.webp"
           alt="Youkhana art"
           width={1920}

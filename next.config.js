@@ -19,6 +19,7 @@ const nextConfig = {
         hostname: 'cdn.shopify.com',
       },
     ],
+    qualities: [100, 75],
   },
 };
 

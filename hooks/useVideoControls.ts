@@ -1,11 +1,11 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from "react";
 
-interface VideoState {
+type VideoState = {
   isPlaying: boolean;
   isMuted: boolean;
   isPaused: boolean;
   showThumbnail: boolean;
-}
+};
 
 export default function useVideoControls() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -20,7 +20,7 @@ export default function useVideoControls() {
     if (videoRef.current) {
       if (videoRef.current.paused) {
         videoRef.current.play();
-        setVideoState(prev => ({
+        setVideoState((prev) => ({
           ...prev,
           isPlaying: true,
           isPaused: false,
@@ -28,7 +28,7 @@ export default function useVideoControls() {
         }));
       } else {
         videoRef.current.pause();
-        setVideoState(prev => ({
+        setVideoState((prev) => ({
           ...prev,
           isPlaying: false,
           isPaused: true,
@@ -40,7 +40,7 @@ export default function useVideoControls() {
   const toggleMute = useCallback(() => {
     if (videoRef.current) {
       videoRef.current.muted = !videoRef.current.muted;
-      setVideoState(prev => ({
+      setVideoState((prev) => ({
         ...prev,
         isMuted: !prev.isMuted,
       }));
@@ -50,7 +50,7 @@ export default function useVideoControls() {
   const togglePauseEndVideo = useCallback(() => {
     if (videoRef.current) {
       videoRef.current.pause();
-      setVideoState(prev => ({
+      setVideoState((prev) => ({
         ...prev,
         isPlaying: false,
         isPaused: true,
@@ -62,7 +62,7 @@ export default function useVideoControls() {
     if (videoRef.current) {
       if (!videoRef.current.paused) {
         videoRef.current.pause();
-        setVideoState(prev => ({
+        setVideoState((prev) => ({
           ...prev,
           isPlaying: false,
           isPaused: true,
