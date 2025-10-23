@@ -1,8 +1,7 @@
-import ProductsCard from '@/components/Shop/Products-Card';
-import SearchBar from '@/components/Shop/Search-Bar';
-import { getProducts } from '@/lib/shopify';
+import ProductsCard from "@/components/Shop/Products-Card";
+import { getProducts } from "@/lib/shopify";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export default async function Shop() {
   const products = await getProducts({});
