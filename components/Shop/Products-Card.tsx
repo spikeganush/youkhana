@@ -4,7 +4,7 @@ import { Product } from '@/types/shopify/type';
 import Link from 'next/link';
 import ProductCardImage from './Product-Card-Image';
 import SearchBar from './Search-Bar';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export function ProductCard({ product }: { product: Product }) {
   const price = product.priceRange.minVariantPrice;
@@ -37,14 +37,13 @@ export type OrderByAndDirectionType = {
 
 export default function ProductsCard({ products }: { products: Product[] }) {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
   const [orderByAndDirection, setOrderByAndDirection] =
     useState<OrderByAndDirectionType>({
       orderBy: 'Date',
       direction: 'DSC',
     });
 
-  useEffect(() => {
+  const filteredProducts = useMemo(() => {
     let updatedProducts = products;
 
     // Filter products by selected tags
@@ -55,7 +54,7 @@ export default function ProductsCard({ products }: { products: Product[] }) {
     }
 
     // Sort the filtered products
-    updatedProducts = [...updatedProducts].sort((a, b) => {
+    return [...updatedProducts].sort((a, b) => {
       if (orderByAndDirection.orderBy === 'Date') {
         const aDate = new Date(a.updatedAt);
         const bDate = new Date(b.updatedAt);
@@ -70,9 +69,6 @@ export default function ProductsCard({ products }: { products: Product[] }) {
           : bPrice - aPrice;
       }
     });
-
-    setFilteredProducts(updatedProducts);
-    // eslint-disable-next-line
   }, [selectedTags, orderByAndDirection, products]);
 
   return (

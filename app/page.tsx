@@ -7,6 +7,8 @@ import { siteConfig } from './seo.config';
 import { constructMetadata } from './seo.config';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = constructMetadata({
   title: 'Home',
   description: 'Discover unique designer garments crafted for the bold and diverse community of Sydney.',
