@@ -1,15 +1,11 @@
-'use client';
+"use client";
 
-import {
-  PauseCircleIcon,
-  PlayCircleIcon,
-  SpeakerWaveIcon,
-  SpeakerXMarkIcon,
-} from '@heroicons/react/24/outline';
-import { useState } from 'react';
-import { InstagramImage } from './instagram-image';
-import useVideoControls from '@/hooks/useVideoControls';
-import { InstagramMediaProps } from '@/types/instagram';
+import { useState } from "react";
+import { InstagramImage } from "./instagram-image";
+import useVideoControls from "@/hooks/useVideoControls";
+import { InstagramMediaProps } from "@/types/instagram";
+import { cn } from "@/lib/utils";
+import InstagramVideoControl from "./instagam-video_control";
 
 export function InstagramMedia({
   mediaType,
@@ -29,7 +25,7 @@ export function InstagramMedia({
 
   return (
     <>
-      {mediaType === 'IMAGE' || mediaType === 'CAROUSEL_ALBUM' ? (
+      {mediaType === "IMAGE" || mediaType === "CAROUSEL_ALBUM" ? (
         <InstagramImage
           url={mediaUrl}
           imageLoading={imageLoading}
@@ -53,43 +49,26 @@ export function InstagramMedia({
             src={mediaUrl}
             draggable={false}
             muted={videoState.isMuted}
+            playsInline
+            preload="metadata"
             onEnded={togglePauseEndVideo}
           />
-          <div className="absolute flex justify-center items-center inset-0">
-            {!videoState.isPlaying ? (
-              <button
-                aria-label={videoState.isPaused ? 'Play' : 'Pause'}
-                className="flex justify-center items-center w-10 h-10 bg-black/30 rounded-full hover:cursor-pointer"
-                onClick={togglePlay}
-              >
-                {!videoState.isPaused ? (
-                  <PlayCircleIcon className="w-10 h-10 text-white" />
-                ) : null}
-                {videoState.isPaused ? (
-                  <PauseCircleIcon className="w-10 h-10 text-white" />
-                ) : null}
-              </button>
-            ) : null}
-            <div className="absolute flex justify-center items-center bottom-2 right-2 z-10">
-              {videoState.isPlaying ? (
-                <button
-                  aria-label={videoState.isMuted ? 'Unmute' : 'Mute'}
-                  className="flex justify-center items-center w-6 h-6 bg-black/60 rounded-full hover:cursor-pointer"
-                  onClick={toggleMute}
-                >
-                  {videoState.isMuted ? (
-                    <SpeakerXMarkIcon className="w-4 h-4 text-white" />
-                  ) : (
-                    <SpeakerWaveIcon className="w-4 h-4 text-white" />
-                  )}
-                </button>
-              ) : null}
-            </div>
+          <div
+            className={cn("absolute flex justify-center items-center ", {
+              "z-10 bottom-2 right-2": videoState.isPlaying,
+              "inset-0": !videoState.isPlaying,
+            })}
+          >
+            <InstagramVideoControl
+              videoState={videoState}
+              toggleMute={toggleMute}
+              togglePlay={togglePlay}
+            />
           </div>
         </div>
       )}
     </>
   );
-};
+}
 
 export default InstagramMedia;

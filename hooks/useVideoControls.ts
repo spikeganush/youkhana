@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 
-type VideoState = {
+export type VideoState = {
   isPlaying: boolean;
   isMuted: boolean;
   isPaused: boolean;
@@ -12,7 +12,7 @@ export default function useVideoControls() {
   const [videoState, setVideoState] = useState<VideoState>({
     isPlaying: false,
     isMuted: true,
-    isPaused: true,
+    isPaused: false,
     showThumbnail: true,
   });
 
@@ -58,7 +58,12 @@ export default function useVideoControls() {
     }
   }, []);
 
-  const divPauseVideo = useCallback(() => {
+  const divPauseVideo = useCallback((e: React.MouseEvent) => {
+    // Prevent if clicking on play button or mute button
+    if ((e.target as HTMLElement).closest("button")) {
+      return;
+    }
+
     if (videoRef.current) {
       if (!videoRef.current.paused) {
         videoRef.current.pause();
@@ -66,6 +71,14 @@ export default function useVideoControls() {
           ...prev,
           isPlaying: false,
           isPaused: true,
+        }));
+      } else {
+        videoRef.current.play();
+        setVideoState((prev) => ({
+          ...prev,
+          isPlaying: true,
+          isPaused: false,
+          showThumbnail: false,
         }));
       }
     }

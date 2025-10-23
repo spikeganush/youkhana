@@ -4,9 +4,11 @@ export function About() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl italic">
           <p className="mt-6 text-lg leading-8 text-black">
-            Youkhana, is a Sydney based designer that specialises in making one
-            of a kind garments for the bold and diverse community in which we
-            live in today.
+            Youkhana is a sustainable fashion label creating couture
+            hand-crafted pieces alongside a ready-to-wear jersey collection.
+            Each design celebrates simplicity, comfort, and conscious
+            craftsmanship, blending sculptural forms with effortless
+            wearability.
           </p>
           <p className="mt-6 text-lg leading-8 text-black">
             Delicate yet structured, each dress focuses on the versatility and

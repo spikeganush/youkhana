@@ -10,11 +10,7 @@ export function Hero() {
           </h2>
 
           <p className="mt-6 text-lg leading-8 text-black italic">
-            Youkhana is a sustainable fashion label creating couture
-            hand-crafted pieces alongside a ready-to-wear jersey collection.
-            Each design celebrates simplicity, comfort, and conscious
-            craftsmanship, blending sculptural forms with effortless
-            wearability.
+            Australian label blurring the line between fashion, art and gender.
           </p>
         </div>
       </div>
