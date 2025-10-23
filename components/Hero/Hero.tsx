@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import Image from "next/image";
 
 export function Hero() {
   return (
@@ -16,7 +16,7 @@ export function Hero() {
       </div>
       <div className="max-[390px]:-mr-8 max-[340px]:-mr-16">
         <Image
-          className="w-full h-[500px] md:h-[900px] min-[2200px]:h-[1300px] object-cover object-right"
+          className="w-full h-[500px] md:h-[900px] min-[2200px]:h-[1300px] object-cover object-center lg:object-contain"
           src="/images/hero__desktop.webp"
           alt="Youkhana art"
           width={1920}

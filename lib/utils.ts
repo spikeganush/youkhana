@@ -1,12 +1,16 @@
-import { sendEmail } from '@/actions/sendEmail';
-import { redis } from './redist';
-import { get } from 'http';
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { redis } from "./redist";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 export const validateString = (
   value: unknown,
   maxLength: number
 ): value is string => {
-  if (!value || typeof value !== 'string' || value?.length > maxLength) {
+  if (!value || typeof value !== "string" || value?.length > maxLength) {
     return false;
   }
 
@@ -18,12 +22,12 @@ export const getErrorMessage = (error: unknown): string => {
 
   if (error instanceof Error) {
     message = error.message;
-  } else if (error && typeof error === 'object' && 'message' in error) {
+  } else if (error && typeof error === "object" && "message" in error) {
     message = String(error.message);
-  } else if (typeof error === 'string') {
+  } else if (typeof error === "string") {
     message = error;
   } else {
-    message = 'Something went wrong';
+    message = "Something went wrong";
   }
 
   return message;
@@ -32,23 +36,23 @@ export const getErrorMessage = (error: unknown): string => {
 export const formatDate = (timestamp: string): string => {
   const date = new Date(timestamp);
   const day = date.getDate();
-  const month = date.toLocaleString('default', { month: 'short' });
+  const month = date.toLocaleString("default", { month: "short" });
   const year = date.getFullYear();
   return `${day} ${month} ${year}`;
 };
 
 export async function fetchInstagramData() {
   try {
-    const getToken = await redis.get('instagram_token');
+    const getToken = await redis.get("instagram_token");
     if (!getToken) {
-      throw new Error('No Instagram token found');
+      throw new Error("No Instagram token found");
     }
 
     const token = getToken || process.env.INSTAGRAM_TOKEN;
     const data = await fetch(
       `https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,username,timestamp,permalink,thumbnail_url&access_token=${token}`,
       {
-        cache: 'no-store',
+        cache: "no-store",
       }
     );
     const json = await data.json();
@@ -57,7 +61,7 @@ export async function fetchInstagramData() {
     }
     return json.data;
   } catch (error) {
-    console.log(process.env.INSTAGRAM_TOKEN, error);
+    console.error("Error fetching Instagram data:", error);
     return [];
   }
 }
@@ -80,20 +84,20 @@ export function debounce<F extends (...args: any[]) => void>(
 
 // app/utils/cleanHtml.ts
 export function cleanHtml(html: string) {
-  if (!html) return '';
+  if (!html) return "";
 
   return (
     html
       // Remove space after paragraph opening tag
-      .replace(/<p>\s+/g, '<p>')
+      .replace(/<p>\s+/g, "<p>")
       // Remove space after span opening tag
-      .replace(/<span>\s+/g, '<span>')
+      .replace(/<span>\s+/g, "<span>")
       // Remove space between p and span tags
-      .replace(/<p([^>]*)>\s+<span/g, '<p$1><span')
+      .replace(/<p([^>]*)>\s+<span/g, "<p$1><span")
       // Clean multiple spaces between words (optional)
-      .replace(/\s{2,}/g, ' ')
+      .replace(/\s{2,}/g, " ")
       // Remove trailing spaces before closing tags (optional)
-      .replace(/\s+<\/span>/g, '</span>')
-      .replace(/\s+<\/p>/g, '</p>')
+      .replace(/\s+<\/span>/g, "</span>")
+      .replace(/\s+<\/p>/g, "</p>")
   );
 }
