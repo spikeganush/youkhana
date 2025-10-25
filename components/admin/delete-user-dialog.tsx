@@ -57,17 +57,17 @@ export function DeleteUserDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription className="space-y-2">
-            <p>
+            <div>
               This action cannot be undone. This will permanently delete the user
               account for:
-            </p>
-            <p className="font-semibold text-foreground">
+            </div>
+            <div className="font-semibold text-foreground">
               {user?.name} ({user?.email})
-            </p>
-            <p className="text-destructive">
+            </div>
+            <div className="text-destructive">
               The user will lose access to the admin space immediately and all their
               session data will be removed.
-            </p>
+            </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

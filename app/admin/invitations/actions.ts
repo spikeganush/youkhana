@@ -15,8 +15,16 @@ import {
   resendInvitation,
   getInvitation,
 } from '@/lib/invitations';
-import { hasPermission, PERMISSIONS, Role, isValidRole } from '@/lib/rbac';
+import { hasPermission, PERMISSIONS, Role } from '@/lib/rbac';
 import { sendInvitationEmail as sendInvitationEmailService } from '@/actions/sendEmail';
+import {
+  createInvitationSchema,
+  resendInvitationSchema,
+  cancelInvitationSchema,
+  safeValidate,
+} from '@/lib/validations';
+import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { logInvitationAction } from '@/lib/audit-log';
 
 /**
  * Result type for server actions
@@ -75,39 +83,57 @@ export async function sendInvitationAction(
       };
     }
 
-    // Validate inputs
-    if (!email || !email.trim()) {
-      return {
-        success: false,
-        message: 'Email is required',
-      };
-    }
-
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return {
-        success: false,
-        message: 'Invalid email format',
-      };
-    }
-
-    if (!isValidRole(role)) {
-      return {
-        success: false,
-        message: 'Invalid role specified',
-      };
-    }
-
-    // Create the invitation
-    const invitation = await createInvitation(
-      email.trim().toLowerCase(),
+    // Validate inputs with Zod
+    const validationResult = safeValidate(createInvitationSchema, {
+      email,
       role,
+    });
+
+    if (!validationResult.success) {
+      return {
+        success: false,
+        message: validationResult.error,
+      };
+    }
+
+    const validatedData = validationResult.data;
+
+    // Check rate limit
+    const rateLimitResult = await checkRateLimit(
+      currentUser.email!,
+      'invitation_creation',
+      RATE_LIMITS.INVITATION_CREATION
+    );
+
+    if (!rateLimitResult.allowed) {
+      return {
+        success: false,
+        message: rateLimitResult.error || 'Rate limit exceeded',
+      };
+    }
+
+    // Create the invitation (email is already lowercase and trimmed from validation)
+    const invitation = await createInvitation(
+      validatedData.email,
+      validatedData.role as Role,
       currentUser.email!
     );
 
     // Send the invitation email
-    await sendInvitationEmail(email.trim().toLowerCase(), invitation.token, role);
+    await sendInvitationEmail(validatedData.email, invitation.token, validatedData.role as Role);
+
+    // Log the successful action
+    await logInvitationAction(
+      'invitation.create',
+      currentUser.email!,
+      currentUser.role as string,
+      validatedData.email,
+      'success',
+      {
+        role: validatedData.role,
+        token: invitation.token,
+      }
+    );
 
     // Revalidate the invitations page
     revalidatePath('/admin/invitations');
@@ -119,6 +145,21 @@ export async function sendInvitationAction(
     };
   } catch (error) {
     console.error('Error sending invitation:', error);
+
+    // Log the failed action
+    const currentUser = await getCurrentUser();
+    if (currentUser) {
+      await logInvitationAction(
+        'invitation.create',
+        currentUser.email!,
+        currentUser.role as string,
+        email,
+        'failure',
+        { role },
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+    }
+
     return {
       success: false,
       message: error instanceof Error ? error.message : 'Failed to send invitation',
@@ -150,8 +191,20 @@ export async function resendInvitationAction(
       };
     }
 
+    // Validate token with Zod
+    const validationResult = safeValidate(resendInvitationSchema, { token });
+
+    if (!validationResult.success) {
+      return {
+        success: false,
+        message: validationResult.error,
+      };
+    }
+
+    const validatedToken = validationResult.data.token;
+
     // Get the existing invitation
-    const existingInvitation = await getInvitation(token);
+    const existingInvitation = await getInvitation(validatedToken);
     if (!existingInvitation) {
       return {
         success: false,
@@ -160,13 +213,26 @@ export async function resendInvitationAction(
     }
 
     // Resend (creates new invitation with new token and expiry)
-    const newInvitation = await resendInvitation(token, currentUser.email!);
+    const newInvitation = await resendInvitation(validatedToken, currentUser.email!);
 
     // Send the new invitation email
     await sendInvitationEmail(
       newInvitation.email,
       newInvitation.token,
       newInvitation.role
+    );
+
+    // Log the successful action
+    await logInvitationAction(
+      'invitation.resend',
+      currentUser.email!,
+      currentUser.role as string,
+      newInvitation.email,
+      'success',
+      {
+        oldToken: validatedToken,
+        newToken: newInvitation.token,
+      }
     );
 
     // Revalidate the invitations page
@@ -179,6 +245,21 @@ export async function resendInvitationAction(
     };
   } catch (error) {
     console.error('Error resending invitation:', error);
+
+    // Log the failed action
+    const currentUser = await getCurrentUser();
+    if (currentUser) {
+      await logInvitationAction(
+        'invitation.resend',
+        currentUser.email!,
+        currentUser.role as string,
+        token,
+        'failure',
+        { token },
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+    }
+
     return {
       success: false,
       message: error instanceof Error ? error.message : 'Failed to resend invitation',
@@ -210,8 +291,34 @@ export async function cancelInvitationAction(
       };
     }
 
+    // Validate token with Zod
+    const validationResult = safeValidate(cancelInvitationSchema, { token });
+
+    if (!validationResult.success) {
+      return {
+        success: false,
+        message: validationResult.error,
+      };
+    }
+
+    const validatedToken = validationResult.data.token;
+
+    // Get invitation details before deleting for logging
+    const invitation = await getInvitation(validatedToken);
+    const invitationEmail = invitation?.email || 'unknown';
+
     // Delete the invitation
-    await deleteInvitation(token);
+    await deleteInvitation(validatedToken);
+
+    // Log the successful action
+    await logInvitationAction(
+      'invitation.cancel',
+      currentUser.email!,
+      currentUser.role as string,
+      invitationEmail,
+      'success',
+      { token: validatedToken }
+    );
 
     // Revalidate the invitations page
     revalidatePath('/admin/invitations');
@@ -222,6 +329,21 @@ export async function cancelInvitationAction(
     };
   } catch (error) {
     console.error('Error cancelling invitation:', error);
+
+    // Log the failed action
+    const currentUser = await getCurrentUser();
+    if (currentUser) {
+      await logInvitationAction(
+        'invitation.cancel',
+        currentUser.email!,
+        currentUser.role as string,
+        token,
+        'failure',
+        { token },
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+    }
+
     return {
       success: false,
       message: error instanceof Error ? error.message : 'Failed to cancel invitation',

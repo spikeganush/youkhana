@@ -418,44 +418,115 @@ interface Invitation {
 
 ---
 
-### Phase 5: Security & Protection ⏳ (2 hours)
-**Status**: 🔴 Not Started
-**Started**: _Not yet_
-**Completed**: _Not yet_
+### Phase 5: Security & Protection ✅ (2 hours)
+**Status**: ✅ Completed
+**Started**: 2025-10-26
+**Completed**: 2025-10-26
 
 #### Tasks
-- [ ] Enhance middleware protection
-  - [ ] Block `/admin/*` for non-authenticated users
-  - [ ] Redirect to `/auth/signin` with callback URL
-  - [ ] Verify user exists in Redis
-  - [ ] Check user role for admin access
-- [ ] Add server action security
-  - [ ] Verify authentication in all actions
-  - [ ] Verify user role/permissions
-  - [ ] Prevent master admin deletion/modification
-  - [ ] Add rate limiting for invitation creation
-- [ ] Add CSRF protection
-  - [ ] Verify NextAuth CSRF tokens
-- [ ] Add input validation
-  - [ ] Email format validation
-  - [ ] Role enum validation
-  - [ ] Prevent duplicate invitations
-- [ ] Error handling
-  - [ ] User-friendly error messages
-  - [ ] Log errors for debugging
-  - [ ] Graceful failure states
-- [ ] Add audit logging
-  - [ ] Log all user management actions
-  - [ ] Log invitation creation/usage
-  - [ ] Store in Redis with TTL
+- [x] ~~Enhance middleware protection~~ (Already implemented at layout level in Phase 2)
+  - [x] Block `/admin/*` for non-authenticated users
+  - [x] Redirect to `/auth/signin` with callback URL
+  - [x] Verify user exists in Redis
+  - [x] Check user role for admin access
+- [x] Add server action security
+  - [x] Verify authentication in all actions (Already in place from Phase 3 & 4)
+  - [x] Verify user role/permissions (Already in place from Phase 3 & 4)
+  - [x] Prevent master admin deletion/modification (Already in place from Phase 3 & 4)
+  - [x] Add rate limiting for invitation creation
+- [x] ~~Add CSRF protection~~ (Built into NextAuth v5)
+  - [x] NextAuth CSRF tokens automatically handled
+- [x] Add input validation
+  - [x] Comprehensive Zod schemas for all inputs
+  - [x] Email format validation with auto-lowercase and trim
+  - [x] Role enum validation
+  - [x] Name length validation
+  - [x] Token format validation
+  - [x] Prevent duplicate invitations (Already in place from Phase 4)
+- [x] Error handling
+  - [x] User-friendly error messages in all actions
+  - [x] Comprehensive error logging with console.error
+  - [x] Graceful failure states with proper ActionResult types
+- [x] Add audit logging
+  - [x] Log all user management actions (create, update role, update name, delete)
+  - [x] Log all invitation actions (create, resend, cancel)
+  - [x] Store in Redis with 90-day TTL
+  - [x] Queryable by category, user, action, and resource
 
-#### Files to Modify
-- `/middleware.ts` - Enhanced protection
-- `/app/admin/*/actions.ts` - Add security checks
-- `/lib/rbac.ts` - Add permission checking functions
+#### Files Created
+- ✅ `/lib/validations.ts` - Comprehensive Zod validation schemas
+- ✅ `/lib/rate-limit.ts` - Rate limiting system using Redis
+- ✅ `/lib/audit-log.ts` - Audit logging system with Redis storage
+
+#### Files Modified
+- ✅ `/app/admin/invitations/actions.ts` - Added Zod validation, rate limiting, and audit logging
+- ✅ `/app/admin/users/actions.ts` - Added Zod validation and audit logging
 
 #### Notes
-_Add implementation notes here_
+**Implementation Details**:
+- Successfully created comprehensive input validation system using Zod
+- All inputs are validated, sanitized (lowercase, trim), and type-checked
+- Implemented Redis-based rate limiting:
+  - Invitation creation: 10 per hour per user
+  - User deletion: 20 per hour per user (configured but not yet applied)
+  - Graceful fallback on Redis errors (allows action to prevent legitimate users from being blocked)
+- Created comprehensive audit logging system:
+  - All admin actions logged with detailed metadata
+  - Logs stored in Redis with 90-day TTL
+  - Multiple query methods: by category, user, action type, resource
+  - Logs include: timestamp, performer, role, action, resource, result, error messages
+  - Automatic indexing in sorted sets for efficient querying
+
+**Security Features Added**:
+1. **Input Validation with Zod**:
+   - Email validation with RFC compliance
+   - Automatic lowercase and trimming
+   - Role validation against enum
+   - Token format validation (64-char hex)
+   - Name length restrictions (1-100 chars)
+
+2. **Rate Limiting**:
+   - Redis-based sliding window rate limiting
+   - Configurable limits per action type
+   - User-specific rate limits
+   - Clear error messages with reset time
+   - Graceful degradation on Redis failures
+
+3. **Audit Logging**:
+   - Complete audit trail of all admin actions
+   - Success and failure logging
+   - Detailed metadata capture
+   - Efficient Redis storage with TTL
+   - Multiple indexing strategies for fast queries
+
+**Security Already in Place (from previous phases)**:
+- Authentication verification in all server actions
+- Role-based permission checking
+- Master admin protection (cannot be deleted or modified)
+- User cannot delete themselves
+- CSRF protection (NextAuth built-in)
+- Session-based authentication with Redis
+- Duplicate invitation prevention
+- Email verification before account creation
+- Invitation expiration (7 days)
+
+**Technical Decisions**:
+- Used Zod for validation instead of manual checks for better type safety and consistency
+- Implemented rate limiting at the application level (not nginx/middleware) for easier configuration
+- Stored audit logs in Redis instead of separate database for simplicity and auto-expiration
+- Used sorted sets for efficient time-based queries on audit logs
+- Made rate limiting gracefully degrade (allow on error) to prevent false negatives
+- All validation errors return user-friendly messages
+
+**Error Handling Improvements**:
+- All server actions return structured ActionResult type
+- Consistent error message format
+- Error logging with console.error for debugging
+- Try-catch blocks in all async operations
+- Audit logging captures both successes and failures
+- User-friendly messages instead of technical errors
+
+**Build Status**: ✅ All files compile successfully with no TypeScript errors
 
 ---
 
@@ -591,6 +662,9 @@ Track all new dependencies here:
 - [x] `/lib/rbac.ts` ✅ (Phase 3)
 - [x] `/lib/redis-auth.ts` ✅ (Phase 3)
 - [x] `/lib/invitations.ts` ✅ (Phase 4)
+- [x] `/lib/validations.ts` ✅ (Phase 5)
+- [x] `/lib/rate-limit.ts` ✅ (Phase 5)
+- [x] `/lib/audit-log.ts` ✅ (Phase 5)
 
 #### Email Templates
 - [x] Email template (inline HTML in actions.ts) ✅ (Phase 4)
@@ -612,7 +686,7 @@ Track all new dependencies here:
 | 2025-10-25 | Phase 2 | ✅ Completed | Admin dashboard UI with Shadcn |
 | 2025-10-25 | Phase 3 | ✅ Completed | User management & RBAC with TanStack Table |
 | 2025-10-26 | Phase 4 | ✅ Completed | Invitation system with email & signup flow |
-| _TBD_ | Phase 5 | 🔴 Not Started | Security & protection |
+| 2025-10-26 | Phase 5 | ✅ Completed | Security enhancements: Zod validation, rate limiting, audit logging |
 | _TBD_ | Phase 6 | 🔴 Not Started | Testing & polish |
 
 ---
@@ -652,14 +726,16 @@ _Document any changes to the original plan here_
 2. ✅ ~~Phase 2 Complete: Admin Dashboard UI~~
 3. ✅ ~~Phase 3 Complete: User Management & RBAC~~
 4. ✅ ~~Phase 4 Complete: Invitation System~~
-5. **Start Phase 5: Security & Protection** (Optional - Most security already implemented)
-   - Review and enhance existing security measures
-   - Add rate limiting for invitation creation
-   - Add audit logging for admin actions
+5. ✅ ~~Phase 5 Complete: Security & Protection~~
+   - ✅ ~~Comprehensive Zod input validation~~
+   - ✅ ~~Rate limiting for invitation creation~~
+   - ✅ ~~Audit logging for all admin actions~~
 6. **Start Phase 6: Testing & Polish**
    - Create master admin user manually in Redis for testing
    - Test complete invitation flow end-to-end
    - Test user management features
+   - Test rate limiting
+   - Verify audit logs are created correctly
    - Polish UI/UX based on testing feedback
 
 ### Future Enhancements (Post-MVP)
@@ -720,5 +796,5 @@ _Document any changes to the original plan here_
 ---
 
 **Last Updated**: 2025-10-26
-**Updated By**: Claude Code (Phase 4 Complete)
-**Current Phase**: Phase 4 ✅ Complete, Ready to Start Phase 5 or Phase 6 Testing
+**Updated By**: Claude Code (Phase 5 Complete)
+**Current Phase**: Phase 5 ✅ Complete, Ready to Start Phase 6 Testing
