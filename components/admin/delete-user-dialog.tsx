@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { User } from '@/lib/redis-auth';
-import { deleteUserAction } from '@/app/admin/users/actions';
+import { useState } from "react";
+import { User } from "@/lib/redis-auth";
+import { deleteUserAction } from "@/app/admin/users/actions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,9 +12,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 interface DeleteUserDialogProps {
   user: User | null;
@@ -44,8 +44,8 @@ export function DeleteUserDialog({
         toast.error(result.message);
       }
     } catch (error) {
-      toast.error('Failed to delete user');
-      console.error('Error deleting user:', error);
+      toast.error("Failed to delete user");
+      console.error("Error deleting user:", error);
     } finally {
       setIsLoading(false);
     }
@@ -57,17 +57,17 @@ export function DeleteUserDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription className="space-y-2">
-            <p>
-              This action cannot be undone. This will permanently delete the user
-              account for:
-            </p>
-            <p className="font-semibold text-foreground">
+            <span>
+              This action cannot be undone. This will permanently delete the
+              user account for:
+            </span>
+            <span className="font-semibold text-foreground">
               {user?.name} ({user?.email})
-            </p>
-            <p className="text-destructive">
-              The user will lose access to the admin space immediately and all their
-              session data will be removed.
-            </p>
+            </span>
+            <span className="text-destructive">
+              The user will lose access to the admin space immediately and all
+              their session data will be removed.
+            </span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -86,7 +86,7 @@ export function DeleteUserDialog({
                 Deleting...
               </>
             ) : (
-              'Delete User'
+              "Delete User"
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

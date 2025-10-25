@@ -291,55 +291,60 @@ interface User {
 
 ---
 
-### Phase 4: Invitation System ⏳ (3-4 hours)
-**Status**: 🔴 Not Started
-**Started**: _Not yet_
-**Completed**: _Not yet_
+### Phase 4: Invitation System ✅ (3-4 hours)
+**Status**: ✅ Completed
+**Started**: 2025-10-26
+**Completed**: 2025-10-26
 
 #### Tasks
-- [ ] Create invitation logic
-  - [ ] `/lib/invitations.ts` - Invitation CRUD operations
-  - [ ] `createInvitation(email, role, createdBy)`
-  - [ ] `getInvitation(token)`
-  - [ ] `getPendingInvitations()`
-  - [ ] `markInvitationUsed(token)`
-  - [ ] `deleteInvitation(token)`
-  - [ ] `cleanupExpiredInvitations()`
-- [ ] Create invitation management page
-  - [ ] `/app/admin/invitations/page.tsx`
-  - [ ] `/components/admin/invite-form.tsx` - Email + Role form
-  - [ ] `/components/admin/invitation-table.tsx` - Pending invitations
-  - [ ] Actions: Resend, Cancel invitation
-- [ ] Create invitation actions
-  - [ ] `/app/admin/invitations/actions.ts`
-  - [ ] `sendInvitationAction(email, role)`
-  - [ ] `resendInvitationAction(token)`
-  - [ ] `cancelInvitationAction(token)`
-- [ ] Create email templates
-  - [ ] `/emails/invitation-email.tsx` - React Email template
-  - [ ] Professional design with CTA button
-  - [ ] Include expiration notice (7 days)
-- [ ] Create signup flow
-  - [ ] `/app/auth/signup/[token]/page.tsx` - Token verification
-  - [ ] Verify token is valid and not expired
-  - [ ] Show email (pre-filled, read-only)
-  - [ ] Collect name from user
-  - [ ] Create user account in Redis
-  - [ ] Auto-sign in after account creation
-- [ ] Create sign in page
-  - [ ] `/app/auth/signin/page.tsx` - Email magic link form
-  - [ ] Custom branded sign-in UI
+- [x] Create invitation logic
+  - [x] `/lib/invitations.ts` - Invitation CRUD operations
+  - [x] `createInvitation(email, role, createdBy)`
+  - [x] `getInvitation(token)`
+  - [x] `getPendingInvitations()`
+  - [x] `markInvitationUsed(token)`
+  - [x] `deleteInvitation(token)`
+  - [x] `cleanupExpiredInvitations()`
+  - [x] `validateInvitationToken(token)`
+  - [x] `resendInvitation(oldToken, resendBy)`
+  - [x] `getPendingInvitationsCount()`
+- [x] Create invitation management page
+  - [x] `/app/admin/invitations/page.tsx`
+  - [x] `/components/admin/invite-form.tsx` - Email + Role form
+  - [x] `/components/admin/invitation-table.tsx` - Pending invitations
+  - [x] Actions: Resend, Cancel invitation
+- [x] Create invitation actions
+  - [x] `/app/admin/invitations/actions.ts`
+  - [x] `sendInvitationAction(email, role)`
+  - [x] `resendInvitationAction(token)`
+  - [x] `cancelInvitationAction(token)`
+- [x] Create email templates
+  - [x] HTML email template (inline in actions.ts)
+  - [x] Professional design with CTA button
+  - [x] Include expiration notice (7 days)
+  - [ ] React Email template (deferred - optional enhancement)
+- [x] Create signup flow
+  - [x] `/app/auth/signup/[token]/page.tsx` - Token verification
+  - [x] Verify token is valid and not expired
+  - [x] Show email (pre-filled, read-only)
+  - [x] Collect name from user
+  - [x] Create user account in Redis
+  - [x] Auto-sign in after account creation
+  - [x] `/components/auth/signup-form.tsx` - Signup form component
+  - [x] `/app/auth/verify-email/page.tsx` - Email verification instructions page
+- [x] Sign in page
+  - [x] `/app/auth/signin/page.tsx` - Already existed, working correctly
 
-#### Files to Create
-- `/lib/invitations.ts`
-- `/app/admin/invitations/page.tsx`
-- `/app/admin/invitations/actions.ts`
-- `/components/admin/invite-form.tsx`
-- `/components/admin/invitation-table.tsx`
-- `/emails/invitation-email.tsx`
-- `/app/auth/signup/[token]/page.tsx`
-- `/app/auth/signin/page.tsx`
-- `/components/auth/signin-form.tsx`
+#### Files Created
+- ✅ `/lib/invitations.ts` - Complete invitation system with all CRUD operations
+- ✅ `/app/admin/invitations/page.tsx` - Invitation management page with stats
+- ✅ `/app/admin/invitations/actions.ts` - Server actions with email sending
+- ✅ `/components/admin/invite-form.tsx` - Form to send invitations
+- ✅ `/components/admin/invitation-table.tsx` - Table with resend/cancel actions
+- ✅ `/app/auth/signup/[token]/page.tsx` - Signup page with token validation
+- ✅ `/components/auth/signup-form.tsx` - Signup form component
+- ✅ `/app/auth/verify-email/page.tsx` - Email verification instructions
+- ✅ `/app/auth/signin/page.tsx` - Already existed from Phase 1
 
 #### Data Models (Redis)
 ```typescript
@@ -347,7 +352,7 @@ interface User {
 interface Invitation {
   email: string;
   role: 'ADMIN' | 'MEMBER';
-  token: string; // Unique random token
+  token: string; // Unique random token (64 hex chars)
   expiresAt: string; // ISO timestamp (7 days from creation)
   createdBy: string; // Email of admin who created it
   createdAt: string; // ISO timestamp
@@ -355,52 +360,173 @@ interface Invitation {
   usedAt?: string; // ISO timestamp when used
 }
 
-// Index: invitations:pending (Set of pending invitation tokens)
+// Redis Keys:
+// - invitation:{token} - Hash storing invitation data
+// - invitations:pending - Set of pending invitation tokens
+// - invitation:email:{email} - String mapping email to token (for duplicate prevention)
 ```
 
 #### Notes
-_Add implementation notes here_
+**Implementation Details**:
+- Successfully created comprehensive invitation system with full lifecycle management
+- Implemented secure token generation using crypto.randomBytes (32 bytes = 64 hex chars)
+- Built invitation management page with real-time stats and TanStack Table
+- Created email sending functionality using Resend with inline HTML template
+- Implemented signup flow with token validation and automatic expiration checking
+- Added duplicate invitation prevention (can't invite same email twice)
+- Created verify-email page to guide users after account creation
+- All server actions include proper authentication and permission checks
+
+**Security Features Implemented**:
+- Secure random token generation (64 character hex strings)
+- Automatic expiration checking (7 days configurable via env)
+- Prevention of duplicate invitations
+- Cannot invite MASTER_ADMIN through invitation system
+- Validation that user doesn't already exist before creating invitation
+- Token validation prevents reuse of already-used invitations
+- Expired invitations automatically marked and removed from pending set
+- All actions verify user permissions via RBAC system
+
+**UI/UX Features**:
+- Clean invitation form with email and role selection
+- Invitation table with sortable columns and search
+- Real-time expiration countdown display (shows "2d 5h remaining")
+- Resend and cancel actions with loading states
+- Confirmation dialog for canceling invitations
+- Stats cards showing pending, admin, and member invitation counts
+- Professional email template with clear call-to-action
+- Signup page with clear instructions and what-happens-next guide
+- Verify-email page with helpful next steps
+
+**Technical Decisions**:
+- Used inline HTML email template instead of React Email for simplicity (can upgrade later)
+- Implemented email index for fast duplicate checking
+- Used crypto module for secure token generation
+- Automatic cleanup of expired invitations when fetching pending list
+- Resend creates new invitation with new token and expiry (deletes old one)
+- Auto sign-in after signup sends magic link email
+- Sidebar already had Invitations link from Phase 2
+
+**Integration Points**:
+- Integrates with existing RBAC permissions system
+- Uses existing Resend email provider from auth setup
+- Leverages existing Redis instance and patterns
+- Follows same patterns as user management from Phase 3
+- Works with existing sign-in page and auth flow
+
+**Build Status**: ✅ All files compile successfully with no TypeScript errors
 
 ---
 
-### Phase 5: Security & Protection ⏳ (2 hours)
-**Status**: 🔴 Not Started
-**Started**: _Not yet_
-**Completed**: _Not yet_
+### Phase 5: Security & Protection ✅ (2 hours)
+**Status**: ✅ Completed
+**Started**: 2025-10-26
+**Completed**: 2025-10-26
 
 #### Tasks
-- [ ] Enhance middleware protection
-  - [ ] Block `/admin/*` for non-authenticated users
-  - [ ] Redirect to `/auth/signin` with callback URL
-  - [ ] Verify user exists in Redis
-  - [ ] Check user role for admin access
-- [ ] Add server action security
-  - [ ] Verify authentication in all actions
-  - [ ] Verify user role/permissions
-  - [ ] Prevent master admin deletion/modification
-  - [ ] Add rate limiting for invitation creation
-- [ ] Add CSRF protection
-  - [ ] Verify NextAuth CSRF tokens
-- [ ] Add input validation
-  - [ ] Email format validation
-  - [ ] Role enum validation
-  - [ ] Prevent duplicate invitations
-- [ ] Error handling
-  - [ ] User-friendly error messages
-  - [ ] Log errors for debugging
-  - [ ] Graceful failure states
-- [ ] Add audit logging
-  - [ ] Log all user management actions
-  - [ ] Log invitation creation/usage
-  - [ ] Store in Redis with TTL
+- [x] ~~Enhance middleware protection~~ (Already implemented at layout level in Phase 2)
+  - [x] Block `/admin/*` for non-authenticated users
+  - [x] Redirect to `/auth/signin` with callback URL
+  - [x] Verify user exists in Redis
+  - [x] Check user role for admin access
+- [x] Add server action security
+  - [x] Verify authentication in all actions (Already in place from Phase 3 & 4)
+  - [x] Verify user role/permissions (Already in place from Phase 3 & 4)
+  - [x] Prevent master admin deletion/modification (Already in place from Phase 3 & 4)
+  - [x] Add rate limiting for invitation creation
+- [x] ~~Add CSRF protection~~ (Built into NextAuth v5)
+  - [x] NextAuth CSRF tokens automatically handled
+- [x] Add input validation
+  - [x] Comprehensive Zod schemas for all inputs
+  - [x] Email format validation with auto-lowercase and trim
+  - [x] Role enum validation
+  - [x] Name length validation
+  - [x] Token format validation
+  - [x] Prevent duplicate invitations (Already in place from Phase 4)
+- [x] Error handling
+  - [x] User-friendly error messages in all actions
+  - [x] Comprehensive error logging with console.error
+  - [x] Graceful failure states with proper ActionResult types
+- [x] Add audit logging
+  - [x] Log all user management actions (create, update role, update name, delete)
+  - [x] Log all invitation actions (create, resend, cancel)
+  - [x] Store in Redis with 90-day TTL
+  - [x] Queryable by category, user, action, and resource
 
-#### Files to Modify
-- `/middleware.ts` - Enhanced protection
-- `/app/admin/*/actions.ts` - Add security checks
-- `/lib/rbac.ts` - Add permission checking functions
+#### Files Created
+- ✅ `/lib/validations.ts` - Comprehensive Zod validation schemas
+- ✅ `/lib/rate-limit.ts` - Rate limiting system using Redis
+- ✅ `/lib/audit-log.ts` - Audit logging system with Redis storage
+
+#### Files Modified
+- ✅ `/app/admin/invitations/actions.ts` - Added Zod validation, rate limiting, and audit logging
+- ✅ `/app/admin/users/actions.ts` - Added Zod validation and audit logging
 
 #### Notes
-_Add implementation notes here_
+**Implementation Details**:
+- Successfully created comprehensive input validation system using Zod
+- All inputs are validated, sanitized (lowercase, trim), and type-checked
+- Implemented Redis-based rate limiting:
+  - Invitation creation: 10 per hour per user
+  - User deletion: 20 per hour per user (configured but not yet applied)
+  - Graceful fallback on Redis errors (allows action to prevent legitimate users from being blocked)
+- Created comprehensive audit logging system:
+  - All admin actions logged with detailed metadata
+  - Logs stored in Redis with 90-day TTL
+  - Multiple query methods: by category, user, action type, resource
+  - Logs include: timestamp, performer, role, action, resource, result, error messages
+  - Automatic indexing in sorted sets for efficient querying
+
+**Security Features Added**:
+1. **Input Validation with Zod**:
+   - Email validation with RFC compliance
+   - Automatic lowercase and trimming
+   - Role validation against enum
+   - Token format validation (64-char hex)
+   - Name length restrictions (1-100 chars)
+
+2. **Rate Limiting**:
+   - Redis-based sliding window rate limiting
+   - Configurable limits per action type
+   - User-specific rate limits
+   - Clear error messages with reset time
+   - Graceful degradation on Redis failures
+
+3. **Audit Logging**:
+   - Complete audit trail of all admin actions
+   - Success and failure logging
+   - Detailed metadata capture
+   - Efficient Redis storage with TTL
+   - Multiple indexing strategies for fast queries
+
+**Security Already in Place (from previous phases)**:
+- Authentication verification in all server actions
+- Role-based permission checking
+- Master admin protection (cannot be deleted or modified)
+- User cannot delete themselves
+- CSRF protection (NextAuth built-in)
+- Session-based authentication with Redis
+- Duplicate invitation prevention
+- Email verification before account creation
+- Invitation expiration (7 days)
+
+**Technical Decisions**:
+- Used Zod for validation instead of manual checks for better type safety and consistency
+- Implemented rate limiting at the application level (not nginx/middleware) for easier configuration
+- Stored audit logs in Redis instead of separate database for simplicity and auto-expiration
+- Used sorted sets for efficient time-based queries on audit logs
+- Made rate limiting gracefully degrade (allow on error) to prevent false negatives
+- All validation errors return user-friendly messages
+
+**Error Handling Improvements**:
+- All server actions return structured ActionResult type
+- Consistent error message format
+- Error logging with console.error for debugging
+- Try-catch blocks in all async operations
+- Audit logging captures both successes and failures
+- User-friendly messages instead of technical errors
+
+**Build Status**: ✅ All files compile successfully with no TypeScript errors
 
 ---
 
@@ -517,32 +643,37 @@ Track all new dependencies here:
 - [x] `/app/admin/page.tsx` ✅ (Phase 2)
 - [x] `/app/admin/users/page.tsx` ✅ (Phase 3)
 - [x] `/app/admin/users/actions.ts` ✅ (Phase 3)
-- [ ] `/app/admin/invitations/page.tsx`
-- [ ] `/app/admin/invitations/actions.ts`
+- [x] `/app/admin/invitations/page.tsx` ✅ (Phase 4)
+- [x] `/app/admin/invitations/actions.ts` ✅ (Phase 4)
 
 #### Components
 - [x] `/components/admin/sidebar.tsx` ✅ (Phase 2)
 - [x] `/components/admin/user-nav.tsx` ✅ (Phase 2)
 - [x] `/components/admin/stats-card.tsx` ✅ (Phase 2)
 - [x] `/components/admin/user-table.tsx` ✅ (Phase 3)
-- [ ] `/components/admin/invite-form.tsx`
-- [ ] `/components/admin/invitation-table.tsx`
+- [x] `/components/admin/invite-form.tsx` ✅ (Phase 4)
+- [x] `/components/admin/invitation-table.tsx` ✅ (Phase 4)
 - [x] `/components/admin/edit-user-dialog.tsx` ✅ (Phase 3)
 - [x] `/components/admin/delete-user-dialog.tsx` ✅ (Phase 3)
-- [ ] `/components/auth/signin-form.tsx`
+- [x] `/components/auth/signup-form.tsx` ✅ (Phase 4)
 - [x] `/components/ui/*` ✅ 15 Shadcn components (Phase 2 & 3)
 
 #### Library/Utilities
 - [x] `/lib/rbac.ts` ✅ (Phase 3)
 - [x] `/lib/redis-auth.ts` ✅ (Phase 3)
-- [ ] `/lib/invitations.ts`
+- [x] `/lib/invitations.ts` ✅ (Phase 4)
+- [x] `/lib/validations.ts` ✅ (Phase 5)
+- [x] `/lib/rate-limit.ts` ✅ (Phase 5)
+- [x] `/lib/audit-log.ts` ✅ (Phase 5)
 
 #### Email Templates
-- [ ] `/emails/invitation-email.tsx`
+- [x] Email template (inline HTML in actions.ts) ✅ (Phase 4)
+- [ ] `/emails/invitation-email.tsx` (React Email - optional enhancement)
 
 #### Auth Pages
-- [ ] `/app/auth/signin/page.tsx`
-- [ ] `/app/auth/signup/[token]/page.tsx`
+- [x] `/app/auth/signin/page.tsx` ✅ (Phase 1 - existed, used in Phase 4)
+- [x] `/app/auth/signup/[token]/page.tsx` ✅ (Phase 4)
+- [x] `/app/auth/verify-email/page.tsx` ✅ (Phase 4)
 
 ---
 
@@ -554,8 +685,8 @@ Track all new dependencies here:
 | 2025-10-25 | Phase 1 | ✅ Completed | Authentication setup with NextAuth v5 |
 | 2025-10-25 | Phase 2 | ✅ Completed | Admin dashboard UI with Shadcn |
 | 2025-10-25 | Phase 3 | ✅ Completed | User management & RBAC with TanStack Table |
-| _TBD_ | Phase 4 | 🔴 Not Started | Invitation system |
-| _TBD_ | Phase 5 | 🔴 Not Started | Security & protection |
+| 2025-10-26 | Phase 4 | ✅ Completed | Invitation system with email & signup flow |
+| 2025-10-26 | Phase 5 | ✅ Completed | Security enhancements: Zod validation, rate limiting, audit logging |
 | _TBD_ | Phase 6 | 🔴 Not Started | Testing & polish |
 
 ---
@@ -594,14 +725,18 @@ _Document any changes to the original plan here_
 1. ✅ ~~Phase 1 Complete: Authentication setup~~
 2. ✅ ~~Phase 2 Complete: Admin Dashboard UI~~
 3. ✅ ~~Phase 3 Complete: User Management & RBAC~~
-4. **Start Phase 4: Invitation System**
-   - Create invitation logic in /lib/invitations.ts
-   - Create invitation management page with invite form
-   - Create email templates for invitations
-   - Create signup flow for new users
-   - Create sign-in page
-5. Continue to Phase 5: Security & Protection
-6. Test Phases 1-3 by creating master admin user manually in Redis
+4. ✅ ~~Phase 4 Complete: Invitation System~~
+5. ✅ ~~Phase 5 Complete: Security & Protection~~
+   - ✅ ~~Comprehensive Zod input validation~~
+   - ✅ ~~Rate limiting for invitation creation~~
+   - ✅ ~~Audit logging for all admin actions~~
+6. **Start Phase 6: Testing & Polish**
+   - Create master admin user manually in Redis for testing
+   - Test complete invitation flow end-to-end
+   - Test user management features
+   - Test rate limiting
+   - Verify audit logs are created correctly
+   - Polish UI/UX based on testing feedback
 
 ### Future Enhancements (Post-MVP)
 - Add activity/audit log viewer in admin dashboard
@@ -660,6 +795,6 @@ _Document any changes to the original plan here_
 
 ---
 
-**Last Updated**: 2025-10-25
-**Updated By**: Claude Code (Phase 3 Complete)
-**Current Phase**: Phase 3 ✅ Complete, Ready to Start Phase 4 (Invitation System)
+**Last Updated**: 2025-10-26
+**Updated By**: Claude Code (Phase 5 Complete)
+**Current Phase**: Phase 5 ✅ Complete, Ready to Start Phase 6 Testing

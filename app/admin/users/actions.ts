@@ -10,7 +10,14 @@
 import { revalidatePath } from 'next/cache';
 import { getCurrentUser } from '@/lib/auth';
 import { updateUserRole, deleteUser, updateUserName } from '@/lib/redis-auth';
-import { hasPermission, PERMISSIONS, Role, isValidRole } from '@/lib/rbac';
+import { hasPermission, PERMISSIONS, Role } from '@/lib/rbac';
+import {
+  updateUserRoleSchema,
+  updateUserNameSchema,
+  deleteUserSchema,
+  safeValidate,
+} from '@/lib/validations';
+import { logUserAction } from '@/lib/audit-log';
 
 /**
  * Result type for server actions
@@ -46,16 +53,23 @@ export async function updateUserRoleAction(
       };
     }
 
-    // Validate role
-    if (!isValidRole(newRole)) {
+    // Validate inputs with Zod
+    const validationResult = safeValidate(updateUserRoleSchema, {
+      email,
+      role: newRole,
+    });
+
+    if (!validationResult.success) {
       return {
         success: false,
-        message: 'Invalid role specified',
+        message: validationResult.error,
       };
     }
 
+    const validatedData = validationResult.data;
+
     // Prevent non-master admins from creating master admins
-    if (newRole === 'MASTER_ADMIN' && currentUser.role !== 'MASTER_ADMIN') {
+    if (validatedData.role === 'MASTER_ADMIN' && currentUser.role !== 'MASTER_ADMIN') {
       return {
         success: false,
         message: 'Only master admins can assign the master admin role',
@@ -63,7 +77,19 @@ export async function updateUserRoleAction(
     }
 
     // Update the user's role
-    await updateUserRole(email, newRole);
+    await updateUserRole(validatedData.email, validatedData.role as Role);
+
+    // Log the successful action
+    await logUserAction(
+      'user.update.role',
+      currentUser.email!,
+      currentUser.role as string,
+      validatedData.email,
+      'success',
+      {
+        newRole: validatedData.role,
+      }
+    );
 
     // Revalidate the users page to show updated data
     revalidatePath('/admin/users');
@@ -74,6 +100,21 @@ export async function updateUserRoleAction(
     };
   } catch (error) {
     console.error('Error updating user role:', error);
+
+    // Log the failed action
+    const currentUser = await getCurrentUser();
+    if (currentUser) {
+      await logUserAction(
+        'user.update.role',
+        currentUser.email!,
+        currentUser.role as string,
+        email,
+        'failure',
+        { newRole },
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+    }
+
     return {
       success: false,
       message: error instanceof Error ? error.message : 'Failed to update user role',
@@ -106,16 +147,35 @@ export async function updateUserNameAction(
       };
     }
 
-    // Validate name
-    if (!newName || newName.trim().length === 0) {
+    // Validate inputs with Zod
+    const validationResult = safeValidate(updateUserNameSchema, {
+      email,
+      name: newName,
+    });
+
+    if (!validationResult.success) {
       return {
         success: false,
-        message: 'Name cannot be empty',
+        message: validationResult.error,
       };
     }
 
-    // Update the user's name
-    await updateUserName(email, newName.trim());
+    const validatedData = validationResult.data;
+
+    // Update the user's name (already trimmed from validation)
+    await updateUserName(validatedData.email, validatedData.name);
+
+    // Log the successful action
+    await logUserAction(
+      'user.update.name',
+      currentUser.email!,
+      currentUser.role as string,
+      validatedData.email,
+      'success',
+      {
+        newName: validatedData.name,
+      }
+    );
 
     // Revalidate the users page to show updated data
     revalidatePath('/admin/users');
@@ -126,6 +186,21 @@ export async function updateUserNameAction(
     };
   } catch (error) {
     console.error('Error updating user name:', error);
+
+    // Log the failed action
+    const currentUser = await getCurrentUser();
+    if (currentUser) {
+      await logUserAction(
+        'user.update.name',
+        currentUser.email!,
+        currentUser.role as string,
+        email,
+        'failure',
+        { newName },
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+    }
+
     return {
       success: false,
       message: error instanceof Error ? error.message : 'Failed to update user name',
@@ -155,8 +230,20 @@ export async function deleteUserAction(email: string): Promise<ActionResult> {
       };
     }
 
+    // Validate inputs with Zod
+    const validationResult = safeValidate(deleteUserSchema, { email });
+
+    if (!validationResult.success) {
+      return {
+        success: false,
+        message: validationResult.error,
+      };
+    }
+
+    const validatedEmail = validationResult.data.email;
+
     // Prevent users from deleting themselves
-    if (email === currentUser.email) {
+    if (validatedEmail === currentUser.email) {
       return {
         success: false,
         message: 'You cannot delete your own account',
@@ -164,7 +251,16 @@ export async function deleteUserAction(email: string): Promise<ActionResult> {
     }
 
     // Delete the user
-    await deleteUser(email);
+    await deleteUser(validatedEmail);
+
+    // Log the successful action
+    await logUserAction(
+      'user.delete',
+      currentUser.email!,
+      currentUser.role as string,
+      validatedEmail,
+      'success'
+    );
 
     // Revalidate the users page to show updated data
     revalidatePath('/admin/users');
@@ -175,6 +271,21 @@ export async function deleteUserAction(email: string): Promise<ActionResult> {
     };
   } catch (error) {
     console.error('Error deleting user:', error);
+
+    // Log the failed action
+    const currentUser = await getCurrentUser();
+    if (currentUser) {
+      await logUserAction(
+        'user.delete',
+        currentUser.email!,
+        currentUser.role as string,
+        email,
+        'failure',
+        undefined,
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+    }
+
     return {
       success: false,
       message: error instanceof Error ? error.message : 'Failed to delete user',
