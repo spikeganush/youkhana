@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 
 export function Hero() {
@@ -17,7 +20,7 @@ export function Hero() {
       <div className="max-[390px]:-mr-8 max-[340px]:-mr-16">
         <Image
           className="w-full h-[500px] md:h-[900px] min-[2200px]:h-[1300px] object-cover object-center lg:object-contain"
-          src="/images/hero__desktop.webp"
+          src={`/images/hero__desktop__3.webp`}
           alt="Youkhana art"
           width={1920}
           height={1080}

@@ -1,6 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { redis } from "./redist";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -43,7 +42,10 @@ export const formatDate = (timestamp: string): string => {
 
 export async function fetchInstagramData() {
   try {
+    // Import redis only in server-side function
+    const { redis } = await import("./redist");
     const getToken = await redis.get("instagram_token");
+
     if (!getToken) {
       throw new Error("No Instagram token found");
     }
