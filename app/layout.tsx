@@ -22,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en' suppressHydrationWarning={true}>
-      <body className={`bg-slate-50 ${inter.className}`}>
+      <body className={`bg-slate-50 ${inter.className}`} suppressHydrationWarning={true}>
         <Header />
         <main>{children}</main>
         <Footer />
