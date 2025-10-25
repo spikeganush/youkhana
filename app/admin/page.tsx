@@ -3,6 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Users, Mail, Package, TrendingUp } from 'lucide-react';
 import { redis } from '@/lib/redist';
 
+// Force dynamic rendering for this page since it fetches real-time data from Redis
+export const dynamic = 'force-dynamic';
+
 async function getAdminStats() {
   try {
     // Get total users count
