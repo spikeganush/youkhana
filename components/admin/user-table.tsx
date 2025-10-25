@@ -166,7 +166,7 @@ export function UserTable({ users, currentUserRole, currentUserEmail }: UserTabl
         header: 'Actions',
         cell: ({ row }) => {
           const user = row.original;
-          const isMasterAdmin = user.email === process.env.NEXT_PUBLIC_MASTER_ADMIN_EMAIL;
+          const isMasterAdmin = user.role === ROLES.MASTER_ADMIN;
           const isCurrentUser = user.email === currentUserEmail;
 
           return (
