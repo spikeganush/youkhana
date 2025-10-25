@@ -195,47 +195,47 @@ Add an invitation-only admin space to the Youkhana e-commerce website where the 
 
 ---
 
-### Phase 3: User Management & RBAC ⏳ (3-4 hours)
-**Status**: 🔴 Not Started
-**Started**: _Not yet_
-**Completed**: _Not yet_
+### Phase 3: User Management & RBAC ✅ (3-4 hours)
+**Status**: ✅ Completed
+**Started**: 2025-10-25
+**Completed**: 2025-10-25
 
 #### Tasks
-- [ ] Define role system in code
-  - [ ] Create `/lib/rbac.ts`
-  - [ ] Define roles: `MASTER_ADMIN`, `ADMIN`, `MEMBER`
-  - [ ] Define permissions for each role
-- [ ] Create Redis user operations
-  - [ ] `/lib/redis-auth.ts` - User CRUD operations
-  - [ ] `createUser(email, name, role, invitedBy)`
-  - [ ] `getUser(email)`
-  - [ ] `getAllUsers()`
-  - [ ] `updateUserRole(email, role)`
-  - [ ] `deleteUser(email)`
-- [ ] Create user management page
-  - [ ] `/app/admin/users/page.tsx`
-  - [ ] `/components/admin/user-table.tsx` - TanStack Table
-  - [ ] Columns: Email, Name, Role, Created, Actions
-  - [ ] Search functionality
-  - [ ] Filter by role
-  - [ ] Pagination
-- [ ] Create user actions
-  - [ ] `/app/admin/users/actions.ts` - Server actions
-  - [ ] `updateUserRoleAction(email, role)`
-  - [ ] `deleteUserAction(email)`
-- [ ] Add role protection
-  - [ ] Protect master admin from deletion
-  - [ ] Protect master admin role from changes
-  - [ ] Require ADMIN role for user management
+- [x] Define role system in code
+  - [x] Create `/lib/rbac.ts`
+  - [x] Define roles: `MASTER_ADMIN`, `ADMIN`, `MEMBER`
+  - [x] Define permissions for each role
+- [x] Create Redis user operations
+  - [x] `/lib/redis-auth.ts` - User CRUD operations
+  - [x] `createUser(email, name, role, invitedBy)`
+  - [x] `getUser(email)`
+  - [x] `getAllUsers()`
+  - [x] `updateUserRole(email, role)`
+  - [x] `deleteUser(email)`
+- [x] Create user management page
+  - [x] `/app/admin/users/page.tsx`
+  - [x] `/components/admin/user-table.tsx` - TanStack Table
+  - [x] Columns: Email, Name, Role, Created, Actions
+  - [x] Search functionality
+  - [x] Filter by role
+  - [x] Pagination
+- [x] Create user actions
+  - [x] `/app/admin/users/actions.ts` - Server actions
+  - [x] `updateUserRoleAction(email, role)`
+  - [x] `deleteUserAction(email)`
+- [x] Add role protection
+  - [x] Protect master admin from deletion
+  - [x] Protect master admin role from changes
+  - [x] Require ADMIN role for user management
 
-#### Files to Create
-- `/lib/rbac.ts`
-- `/lib/redis-auth.ts`
-- `/app/admin/users/page.tsx`
-- `/app/admin/users/actions.ts`
-- `/components/admin/user-table.tsx`
-- `/components/admin/edit-user-dialog.tsx`
-- `/components/admin/delete-user-dialog.tsx`
+#### Files Created
+- ✅ `/lib/rbac.ts`
+- ✅ `/lib/redis-auth.ts`
+- ✅ `/app/admin/users/page.tsx`
+- ✅ `/app/admin/users/actions.ts`
+- ✅ `/components/admin/user-table.tsx`
+- ✅ `/components/admin/edit-user-dialog.tsx`
+- ✅ `/components/admin/delete-user-dialog.tsx`
 
 #### Data Models (Redis)
 ```typescript
@@ -253,7 +253,41 @@ interface User {
 ```
 
 #### Notes
-_Add implementation notes here_
+**Implementation Details**:
+- Successfully created comprehensive RBAC system with role hierarchy and permission checks
+- Implemented full CRUD operations for user management in Redis
+- Built user management page with TanStack Table v8 featuring:
+  - Sortable columns (Name, Role, Created)
+  - Search by name/email
+  - Filter by role
+  - Pagination with 10 users per page
+  - Edit and delete actions per user
+- Created modal dialogs for editing and deleting users with proper validation
+- Installed @tanstack/react-table and shadcn alert-dialog component
+
+**Security Features Implemented**:
+- Permission-based access control using RBAC system
+- Protection for master admin (cannot be deleted or have role changed)
+- Users cannot delete themselves
+- Only master admins can create other master admins
+- All server actions verify authentication and authorization
+- Proper error handling and user feedback with toast notifications
+
+**UI/UX Features**:
+- Clean, modern interface using Shadcn UI components
+- Real-time stats cards showing total users, admins, and members
+- Responsive table with clear role badges
+- "You" indicator for current user
+- Disabled actions for protected users
+- Loading states during async operations
+- Success/error toast notifications
+
+**Technical Decisions**:
+- Used TanStack Table for powerful client-side data manipulation
+- Implemented server actions for secure data mutations
+- Used revalidatePath for cache invalidation after updates
+- Structured permissions as a separate concern from roles for flexibility
+- Created helper functions for role checking and permission validation
 
 ---
 
@@ -458,11 +492,11 @@ Track all new dependencies here:
 - [x] `@auth/upstash-redis-adapter` - Redis adapter for NextAuth (Installed 2025-10-25)
 - [x] `@auth/core` - Auth.js core (Installed 2025-10-25)
 - [x] Shadcn UI components (Installed 2025-10-25)
-  - Installed via CLI: button, card, table, form, input, dialog, dropdown-menu, avatar, badge, select, toast, label
+  - Installed via CLI: button, card, table, form, input, dialog, dropdown-menu, avatar, badge, select, toast, label, alert-dialog
   - Added dependencies: @radix-ui/react-* packages, class-variance-authority, clsx, tailwind-merge
-- [ ] `@tanstack/react-table` - Data tables (Phase 3)
+- [x] `@tanstack/react-table` - Data tables (Installed 2025-10-25, Phase 3)
 
-**Last Updated**: 2025-10-25 (Phase 2 Complete)
+**Last Updated**: 2025-10-25 (Phase 3 Complete)
 
 ---
 
@@ -481,8 +515,8 @@ Track all new dependencies here:
 #### Admin Dashboard
 - [x] `/app/admin/layout.tsx` ✅ (Phase 2)
 - [x] `/app/admin/page.tsx` ✅ (Phase 2)
-- [ ] `/app/admin/users/page.tsx`
-- [ ] `/app/admin/users/actions.ts`
+- [x] `/app/admin/users/page.tsx` ✅ (Phase 3)
+- [x] `/app/admin/users/actions.ts` ✅ (Phase 3)
 - [ ] `/app/admin/invitations/page.tsx`
 - [ ] `/app/admin/invitations/actions.ts`
 
@@ -490,17 +524,17 @@ Track all new dependencies here:
 - [x] `/components/admin/sidebar.tsx` ✅ (Phase 2)
 - [x] `/components/admin/user-nav.tsx` ✅ (Phase 2)
 - [x] `/components/admin/stats-card.tsx` ✅ (Phase 2)
-- [ ] `/components/admin/user-table.tsx`
+- [x] `/components/admin/user-table.tsx` ✅ (Phase 3)
 - [ ] `/components/admin/invite-form.tsx`
 - [ ] `/components/admin/invitation-table.tsx`
-- [ ] `/components/admin/edit-user-dialog.tsx`
-- [ ] `/components/admin/delete-user-dialog.tsx`
+- [x] `/components/admin/edit-user-dialog.tsx` ✅ (Phase 3)
+- [x] `/components/admin/delete-user-dialog.tsx` ✅ (Phase 3)
 - [ ] `/components/auth/signin-form.tsx`
-- [x] `/components/ui/*` ✅ 14 Shadcn components (Phase 2)
+- [x] `/components/ui/*` ✅ 15 Shadcn components (Phase 2 & 3)
 
 #### Library/Utilities
-- [ ] `/lib/rbac.ts`
-- [ ] `/lib/redis-auth.ts`
+- [x] `/lib/rbac.ts` ✅ (Phase 3)
+- [x] `/lib/redis-auth.ts` ✅ (Phase 3)
 - [ ] `/lib/invitations.ts`
 
 #### Email Templates
@@ -519,7 +553,7 @@ Track all new dependencies here:
 | 2025-10-25 | Planning | ✅ Completed | Created implementation plan |
 | 2025-10-25 | Phase 1 | ✅ Completed | Authentication setup with NextAuth v5 |
 | 2025-10-25 | Phase 2 | ✅ Completed | Admin dashboard UI with Shadcn |
-| _TBD_ | Phase 3 | 🔴 Not Started | User management & RBAC |
+| 2025-10-25 | Phase 3 | ✅ Completed | User management & RBAC with TanStack Table |
 | _TBD_ | Phase 4 | 🔴 Not Started | Invitation system |
 | _TBD_ | Phase 5 | 🔴 Not Started | Security & protection |
 | _TBD_ | Phase 6 | 🔴 Not Started | Testing & polish |
@@ -559,14 +593,15 @@ _Document any changes to the original plan here_
 ### Immediate Next Actions
 1. ✅ ~~Phase 1 Complete: Authentication setup~~
 2. ✅ ~~Phase 2 Complete: Admin Dashboard UI~~
-3. **Start Phase 3: User Management & RBAC**
-   - Define role system and permissions in /lib/rbac.ts
-   - Create Redis user CRUD operations in /lib/redis-auth.ts
-   - Create user management page with TanStack Table
-   - Implement user actions (update role, delete user)
-   - Add role protection for master admin
-4. Continue to Phase 4: Invitation System
-5. Test Phase 1 & 2 by creating master admin user manually in Redis
+3. ✅ ~~Phase 3 Complete: User Management & RBAC~~
+4. **Start Phase 4: Invitation System**
+   - Create invitation logic in /lib/invitations.ts
+   - Create invitation management page with invite form
+   - Create email templates for invitations
+   - Create signup flow for new users
+   - Create sign-in page
+5. Continue to Phase 5: Security & Protection
+6. Test Phases 1-3 by creating master admin user manually in Redis
 
 ### Future Enhancements (Post-MVP)
 - Add activity/audit log viewer in admin dashboard
@@ -626,5 +661,5 @@ _Document any changes to the original plan here_
 ---
 
 **Last Updated**: 2025-10-25
-**Updated By**: Claude Code (Phase 2 Complete)
-**Current Phase**: Phase 2 ✅ Complete, Ready to Start Phase 3 (User Management & RBAC) or Test Phase 1 & 2
+**Updated By**: Claude Code (Phase 3 Complete)
+**Current Phase**: Phase 3 ✅ Complete, Ready to Start Phase 4 (Invitation System)
