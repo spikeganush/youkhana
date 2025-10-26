@@ -1,3 +1,9 @@
+/**
+ * @deprecated This entire directory contains Shopify integration code which is no longer active.
+ * Kept for reference only. The business has shifted from selling to renting products.
+ * See /lib/rental-products.ts for the new rental product system.
+ */
+
 'use server';
 
 import {

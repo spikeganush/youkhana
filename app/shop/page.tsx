@@ -1,3 +1,9 @@
+/**
+ * @deprecated This file uses Shopify integration which is no longer active.
+ * Kept for reference only. See /app/rent/* for rental product implementation.
+ * The business has shifted from selling to renting products.
+ */
+
 import ProductsCard from "@/components/Shop/Products-Card";
 import { getProducts } from "@/lib/shopify";
 

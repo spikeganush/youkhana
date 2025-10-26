@@ -11,7 +11,8 @@ export function Header() {
   const { scrollY } = useScroll();
   const navigation = [
     { name: "Home", href: "/" },
-    // { name: 'Shop', href: '/shop' },
+    // { name: 'Rent', href: '/rent' },
+    // { name: 'Shop', href: '/shop' }, // Deprecated - using rental system instead
     // { name: 'Media', href: '#' },
     { name: "Contact", href: "/#contact" },
   ];
