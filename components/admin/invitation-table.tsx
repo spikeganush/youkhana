@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Invitation Table Component
@@ -6,7 +6,7 @@
  * Table displaying pending invitations with actions to resend or cancel.
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -17,12 +17,12 @@ import {
   flexRender,
   SortingState,
   ColumnFiltersState,
-} from '@tanstack/react-table';
-import { Invitation } from '@/lib/invitations';
-import { Role, getRoleLabel } from '@/lib/rbac';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+} from "@tanstack/react-table";
+import { Invitation } from "@/lib/invitations";
+import { Role, getRoleLabel } from "@/lib/rbac";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -30,7 +30,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,10 +40,20 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { resendInvitationAction, cancelInvitationAction } from '@/app/admin/invitations/actions';
-import { RefreshCw, Trash2, ChevronLeft, ChevronRight, ArrowUpDown, Mail } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+} from "@/components/ui/alert-dialog";
+import {
+  resendInvitationAction,
+  cancelInvitationAction,
+} from "@/app/admin/invitations/actions";
+import {
+  RefreshCw,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpDown,
+  Mail,
+} from "lucide-react";
+import { toast } from "react-hot-toast";
 
 interface InvitationTableProps {
   invitations: Invitation[];
@@ -52,7 +62,9 @@ interface InvitationTableProps {
 export function InvitationTable({ invitations }: InvitationTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [cancelInvitation, setCancelInvitation] = useState<Invitation | null>(null);
+  const [cancelInvitation, setCancelInvitation] = useState<Invitation | null>(
+    null
+  );
   const [isResending, setIsResending] = useState<string | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
 
@@ -66,8 +78,8 @@ export function InvitationTable({ invitations }: InvitationTableProps) {
         toast.error(result.message);
       }
     } catch (error) {
-      console.error('Error resending invitation:', error);
-      toast.error('An unexpected error occurred');
+      console.error("Error resending invitation:", error);
+      toast.error("An unexpected error occurred");
     } finally {
       setIsResending(null);
     }
@@ -86,8 +98,8 @@ export function InvitationTable({ invitations }: InvitationTableProps) {
         toast.error(result.message);
       }
     } catch (error) {
-      console.error('Error cancelling invitation:', error);
-      toast.error('An unexpected error occurred');
+      console.error("Error cancelling invitation:", error);
+      toast.error("An unexpected error occurred");
     } finally {
       setIsCancelling(false);
     }
@@ -99,7 +111,7 @@ export function InvitationTable({ invitations }: InvitationTableProps) {
     const diff = expiry.getTime() - now.getTime();
 
     if (diff <= 0) {
-      return 'Expired';
+      return "Expired";
     }
 
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -118,12 +130,14 @@ export function InvitationTable({ invitations }: InvitationTableProps) {
   const columns: ColumnDef<Invitation>[] = useMemo(
     () => [
       {
-        accessorKey: 'email',
+        accessorKey: "email",
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
               className="-ml-4"
             >
               Email
@@ -135,18 +149,20 @@ export function InvitationTable({ invitations }: InvitationTableProps) {
           return (
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium">{row.getValue('email')}</span>
+              <span className="font-medium">{row.getValue("email")}</span>
             </div>
           );
         },
       },
       {
-        accessorKey: 'role',
+        accessorKey: "role",
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
               className="-ml-4"
             >
               Role
@@ -155,32 +171,30 @@ export function InvitationTable({ invitations }: InvitationTableProps) {
           );
         },
         cell: ({ row }) => {
-          const role = row.getValue('role') as Role;
-          return (
-            <Badge variant="secondary">
-              {getRoleLabel(role)}
-            </Badge>
-          );
+          const role = row.getValue("role") as Role;
+          return <Badge variant="secondary">{getRoleLabel(role)}</Badge>;
         },
       },
       {
-        accessorKey: 'createdBy',
-        header: 'Invited By',
+        accessorKey: "createdBy",
+        header: "Invited By",
         cell: ({ row }) => {
           return (
             <span className="text-sm text-muted-foreground">
-              {row.getValue('createdBy')}
+              {row.getValue("createdBy")}
             </span>
           );
         },
       },
       {
-        accessorKey: 'createdAt',
+        accessorKey: "createdAt",
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
               className="-ml-4"
             >
               Created
@@ -189,7 +203,7 @@ export function InvitationTable({ invitations }: InvitationTableProps) {
           );
         },
         cell: ({ row }) => {
-          const date = new Date(row.getValue('createdAt'));
+          const date = new Date(row.getValue("createdAt"));
           return (
             <div>
               <div>{date.toLocaleDateString()}</div>
@@ -201,19 +215,23 @@ export function InvitationTable({ invitations }: InvitationTableProps) {
         },
       },
       {
-        accessorKey: 'expiresAt',
-        header: 'Expires',
+        accessorKey: "expiresAt",
+        header: "Expires",
         cell: ({ row }) => {
-          const expiresAt = row.getValue('expiresAt') as string;
+          const expiresAt = row.getValue("expiresAt") as string;
           const timeRemaining = getTimeRemaining(expiresAt);
-          const isExpired = timeRemaining === 'Expired';
+          const isExpired = timeRemaining === "Expired";
 
           return (
             <div>
-              <div className={isExpired ? 'text-destructive' : ''}>
+              <div className={isExpired ? "text-destructive" : ""}>
                 {new Date(expiresAt).toLocaleDateString()}
               </div>
-              <div className={`text-sm ${isExpired ? 'text-destructive' : 'text-muted-foreground'}`}>
+              <div
+                className={`text-sm ${
+                  isExpired ? "text-destructive" : "text-muted-foreground"
+                }`}
+              >
                 {timeRemaining}
               </div>
             </div>
@@ -221,8 +239,8 @@ export function InvitationTable({ invitations }: InvitationTableProps) {
         },
       },
       {
-        id: 'actions',
-        header: 'Actions',
+        id: "actions",
+        header: "Actions",
         cell: ({ row }) => {
           const invitation = row.original;
           const isResendingThis = isResending === invitation.token;
@@ -285,16 +303,16 @@ export function InvitationTable({ invitations }: InvitationTableProps) {
       <div className="flex items-center gap-4">
         <Input
           placeholder="Search by email..."
-          value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
+          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn('email')?.setFilterValue(event.target.value)
+            table.getColumn("email")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
       </div>
 
       {/* Table */}
-      <div className="rounded-md border">
+      <div className="overflow-x-auto rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -318,17 +336,25 @@ export function InvitationTable({ invitations }: InvitationTableProps) {
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   <div className="flex flex-col items-center justify-center gap-2">
                     <Mail className="h-8 w-8 text-muted-foreground" />
-                    <p className="text-muted-foreground">No pending invitations</p>
+                    <p className="text-muted-foreground">
+                      No pending invitations
+                    </p>
                   </div>
                 </TableCell>
               </TableRow>
@@ -341,11 +367,16 @@ export function InvitationTable({ invitations }: InvitationTableProps) {
       {table.getFilteredRowModel().rows.length > 0 && (
         <div className="flex items-center justify-between">
           <div className="text-sm text-muted-foreground">
-            Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{' '}
+            Showing{" "}
+            {table.getState().pagination.pageIndex *
+              table.getState().pagination.pageSize +
+              1}{" "}
+            to{" "}
             {Math.min(
-              (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+              (table.getState().pagination.pageIndex + 1) *
+                table.getState().pagination.pageSize,
               table.getFilteredRowModel().rows.length
-            )}{' '}
+            )}{" "}
             of {table.getFilteredRowModel().rows.length} invitations
           </div>
           <div className="flex gap-2">
@@ -372,24 +403,30 @@ export function InvitationTable({ invitations }: InvitationTableProps) {
       )}
 
       {/* Cancel Confirmation Dialog */}
-      <AlertDialog open={!!cancelInvitation} onOpenChange={(open) => !open && setCancelInvitation(null)}>
+      <AlertDialog
+        open={!!cancelInvitation}
+        onOpenChange={(open) => !open && setCancelInvitation(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Cancel Invitation</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to cancel the invitation for{' '}
+              Are you sure you want to cancel the invitation for{" "}
               <span className="font-semibold">{cancelInvitation?.email}</span>?
-              This action cannot be undone. The invitation link will no longer work.
+              This action cannot be undone. The invitation link will no longer
+              work.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isCancelling}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isCancelling}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancel}
               disabled={isCancelling}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isCancelling ? 'Cancelling...' : 'Yes, Cancel Invitation'}
+              {isCancelling ? "Cancelling..." : "Yes, Cancel Invitation"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -41,7 +41,7 @@ export default async function InvitationsPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending Invitations</CardTitle>
@@ -83,7 +83,7 @@ export default async function InvitationsPage() {
       </div>
 
       {/* Invite Form and Table in Grid */}
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {/* Invite Form - Takes 1 column */}
         <div className="md:col-span-1">
           <InviteForm />

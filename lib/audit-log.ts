@@ -91,7 +91,13 @@ export type AuditAction =
   | 'auth.signout'
   | 'auth.signup'
   // Settings actions
-  | 'settings.update';
+  | 'settings.update'
+  // Product management actions
+  | 'product.create'
+  | 'product.update'
+  | 'product.delete'
+  | 'product.status.toggle'
+  | 'product.featured.toggle';
 
 /**
  * Audit category for grouping
@@ -100,7 +106,8 @@ export type AuditCategory =
   | 'user_management'
   | 'invitation_management'
   | 'authentication'
-  | 'settings';
+  | 'settings'
+  | 'product_management';
 
 /**
  * Configuration for audit logs
@@ -213,7 +220,10 @@ export async function getAuditLogs(
 
       if (logData) {
         try {
-          const log = JSON.parse(logData as string) as AuditLog;
+          // Upstash Redis automatically parses JSON, so check if it's already an object
+          const log = typeof logData === 'string'
+            ? JSON.parse(logData) as AuditLog
+            : logData as AuditLog;
           logs.push(log);
         } catch (parseError) {
           console.error('Failed to parse audit log:', parseError);
@@ -287,7 +297,10 @@ export async function getAuditLog(logId: string): Promise<AuditLog | null> {
       return null;
     }
 
-    return JSON.parse(logData as string) as AuditLog;
+    // Upstash Redis automatically parses JSON, so check if it's already an object
+    return typeof logData === 'string'
+      ? JSON.parse(logData) as AuditLog
+      : logData as AuditLog;
   } catch (error) {
     console.error('Failed to get audit log:', error);
     return null;
@@ -409,4 +422,69 @@ export async function logAuthAction(
     details,
     errorMessage,
   });
+}
+
+/**
+ * Helper function to create audit log for product actions
+ */
+export async function logProductAction(
+  action: Extract<
+    AuditAction,
+    'product.create' | 'product.update' | 'product.delete' | 'product.status.toggle' | 'product.featured.toggle'
+  >,
+  performedBy: string,
+  performedByRole: string,
+  resource: string,
+  result: 'success' | 'failure',
+  details?: Record<string, unknown>,
+  errorMessage?: string
+): Promise<AuditLog> {
+  return logAuditEvent({
+    performedBy,
+    performedByRole,
+    action,
+    category: 'product_management',
+    resource,
+    result,
+    details,
+    errorMessage,
+  });
+}
+
+/**
+ * Generic helper function to log any action
+ * Use this for custom actions that don't fit existing categories
+ */
+export async function logAction(params: {
+  action: string;
+  resourceType: string;
+  resourceId: string;
+  details?: Record<string, unknown>;
+  performedBy: string;
+  performedByRole?: string;
+  result?: 'success' | 'failure';
+  errorMessage?: string;
+}): Promise<void> {
+  try {
+    // Create a simple audit trail that doesn't require strict typing
+    const logEntry = {
+      id: generateLogId(),
+      timestamp: new Date().toISOString(),
+      ...params,
+      performedByRole: params.performedByRole || 'user',
+      result: params.result || 'success',
+    };
+
+    // Store with a simple key
+    const key = `auditlog:custom:${logEntry.id}`;
+    await redis.setex(key, AUDIT_CONFIG.TTL_SECONDS, JSON.stringify(logEntry));
+
+    // Add to global sorted set
+    const score = Date.now();
+    await redis.zadd('auditlogs:custom', { score, member: logEntry.id });
+    await redis.expire('auditlogs:custom', AUDIT_CONFIG.TTL_SECONDS);
+  } catch (error) {
+    console.error('Failed to log action:', error);
+    // Don't throw - audit logging should not break the application
+  }
 }

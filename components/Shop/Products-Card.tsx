@@ -1,3 +1,8 @@
+/**
+ * @deprecated This component uses Shopify products which are no longer active.
+ * Kept for reference only. See Rental-Products-Card.tsx for rental product implementation.
+ */
+
 'use client';
 
 import { Product } from '@/types/shopify/type';

@@ -35,6 +35,10 @@ export const PERMISSIONS = {
   // Dashboard Permissions
   VIEW_DASHBOARD: 'VIEW_DASHBOARD',
   VIEW_ANALYTICS: 'VIEW_ANALYTICS',
+
+  // Product Management Permissions
+  VIEW_PRODUCTS: 'VIEW_PRODUCTS',
+  MANAGE_PRODUCTS: 'MANAGE_PRODUCTS',
 } as const;
 
 export type Permission = typeof PERMISSIONS[keyof typeof PERMISSIONS];
@@ -57,6 +61,8 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     PERMISSIONS.UPDATE_SETTINGS,
     PERMISSIONS.VIEW_DASHBOARD,
     PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.VIEW_PRODUCTS,
+    PERMISSIONS.MANAGE_PRODUCTS,
   ],
   ADMIN: [
     // Admin can manage users and invitations
@@ -71,11 +77,14 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     PERMISSIONS.VIEW_SETTINGS,
     PERMISSIONS.VIEW_DASHBOARD,
     PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.VIEW_PRODUCTS,
+    PERMISSIONS.MANAGE_PRODUCTS,
   ],
   MEMBER: [
     // Member has limited view-only permissions
     PERMISSIONS.VIEW_DASHBOARD,
     PERMISSIONS.VIEW_SETTINGS,
+    PERMISSIONS.VIEW_PRODUCTS,
   ],
 };
 
