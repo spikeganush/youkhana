@@ -27,8 +27,9 @@ export function ProductPreviewDialog({
 }: ProductPreviewDialogProps) {
   if (!product) return null;
 
-  const primaryImage = product.featuredImage || product.images[0];
-  const hasImages = product.images.length > 0 || product.featuredImage;
+  // Use featuredImage only if it has a valid URL, otherwise fall back to first image
+  const primaryImage = (product.featuredImage?.url ? product.featuredImage : null) || product.images[0];
+  const hasImages = product.images.length > 0 || !!product.featuredImage?.url;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

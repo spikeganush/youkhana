@@ -342,9 +342,19 @@ export async function updateProduct(
     }
   }
 
+  // Auto-set featuredImage to first image if it's empty or if images were updated
+  let featuredImage = updates.featuredImage !== undefined ? updates.featuredImage : existingProduct.featuredImage;
+
+  // If featuredImage is empty or has no URL, set it to the first image
+  const images = updates.images !== undefined ? updates.images : existingProduct.images;
+  if ((!featuredImage || !featuredImage.url) && images && images.length > 0) {
+    featuredImage = images[0];
+  }
+
   const updatedProduct: RentalProduct = {
     ...existingProduct,
     ...updates,
+    featuredImage,
     id, // Ensure ID doesn't change
     createdAt: existingProduct.createdAt, // Preserve creation date
     updatedAt: new Date().toISOString(),

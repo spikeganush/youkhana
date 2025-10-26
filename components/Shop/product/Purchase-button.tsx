@@ -2,7 +2,7 @@
 
 import { getMutationCheckout } from '@/lib/shopify';
 import { useState, useEffect } from 'react';
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ProductVariant } from '@/types/shopify/type';
 
@@ -17,7 +17,7 @@ export default function PurchaseButton({
   const searchParams = useSearchParams();
   const selectedColor = searchParams.get('color');
   const selectedSize = searchParams.get('size');
-  const [state, formAction] = useFormState(getMutationCheckout, {
+  const [state, formAction] = useActionState(getMutationCheckout, {
     id: '',
     webUrl: '',
   });
@@ -80,7 +80,7 @@ export default function PurchaseButton({
             ></path>
           </svg>
         )}
-        {loading ? 'Processing' : available ? 'Purchase' : 'Sold Out'}
+        {loading ? 'Processing' : available ? 'Rent Now' : 'Unavailable'}
       </button>
     </form>
   );
