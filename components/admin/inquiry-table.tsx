@@ -13,6 +13,7 @@ import {
   ColumnFiltersState,
 } from '@tanstack/react-table';
 import { RentalInquiry, RentalInquiryStatus } from '@/types/rental-inquiry';
+import { ProductStatus } from '@/types/rental-product';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,18 +50,23 @@ import {
   Mail,
   Phone,
 } from 'lucide-react';
-import { updateInquiryStatusAction, deleteInquiryAction, addInquiryNotesAction } from '@/app/admin/rental-inquiries/actions';
+import { updateInquiryStatusAction, deleteInquiryAction, addInquiryNotesAction, updateProductStatusAction } from '@/app/admin/rental-inquiries/actions';
 import { toast } from 'sonner';
 
+interface EnrichedInquiry extends RentalInquiry {
+  productStatus: ProductStatus;
+}
+
 interface InquiryTableProps {
-  inquiries: RentalInquiry[];
+  inquiries: EnrichedInquiry[];
 }
 
 export function InquiryTable({ inquiries }: InquiryTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [viewInquiry, setViewInquiry] = useState<RentalInquiry | null>(null);
+  const [viewInquiry, setViewInquiry] = useState<EnrichedInquiry | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  const [updatingProductStatus, setUpdatingProductStatus] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
 
   const getStatusBadgeVariant = (status: RentalInquiryStatus) => {
@@ -145,7 +151,36 @@ export function InquiryTable({ inquiries }: InquiryTableProps) {
     }
   };
 
-  const columns: ColumnDef<RentalInquiry>[] = useMemo(
+  const handleUpdateProductStatus = async (productId: string, status: ProductStatus) => {
+    setUpdatingProductStatus(productId);
+    try {
+      const result = await updateProductStatusAction(productId, status);
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      toast.error('Failed to update product status');
+    } finally {
+      setUpdatingProductStatus(null);
+    }
+  };
+
+  const getProductStatusColor = (status: ProductStatus) => {
+    switch (status) {
+      case 'active':
+        return 'text-green-700 bg-green-50 border-green-200';
+      case 'inactive':
+        return 'text-gray-700 bg-gray-50 border-gray-200';
+      case 'draft':
+        return 'text-yellow-700 bg-yellow-50 border-yellow-200';
+      default:
+        return '';
+    }
+  };
+
+  const columns: ColumnDef<EnrichedInquiry>[] = useMemo(
     () => [
       {
         accessorKey: 'createdAt',
@@ -248,6 +283,46 @@ export function InquiryTable({ inquiries }: InquiryTableProps) {
         },
       },
       {
+        accessorKey: 'productStatus',
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === 'asc')
+              }
+              className="-ml-4"
+            >
+              Product Status
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
+        cell: ({ row }) => {
+          const productStatus = row.getValue('productStatus') as ProductStatus;
+          const inquiry = row.original;
+          return (
+            <Select
+              value={productStatus}
+              onValueChange={(value) => handleUpdateProductStatus(inquiry.productId, value as ProductStatus)}
+              disabled={updatingProductStatus === inquiry.productId}
+            >
+              <SelectTrigger className={`w-[130px] ${getProductStatusColor(productStatus)}`}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="draft">Draft</SelectItem>
+              </SelectContent>
+            </Select>
+          );
+        },
+        filterFn: (row, id, value) => {
+          return value === 'all' || row.getValue(id) === value;
+        },
+      },
+      {
         accessorKey: 'rentalDays',
         header: 'Duration',
         cell: ({ row }) => {
@@ -305,7 +380,7 @@ export function InquiryTable({ inquiries }: InquiryTableProps) {
         },
       },
     ],
-    [updatingStatus]
+    [updatingStatus, updatingProductStatus]
   );
 
   const table = useReactTable({
@@ -348,15 +423,32 @@ export function InquiryTable({ inquiries }: InquiryTableProps) {
           }
         >
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder="Filter by inquiry status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="all">All Inquiry Status</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
             <SelectItem value="contacted">Contacted</SelectItem>
             <SelectItem value="confirmed">Confirmed</SelectItem>
             <SelectItem value="cancelled">Cancelled</SelectItem>
             <SelectItem value="completed">Completed</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={(table.getColumn('productStatus')?.getFilterValue() as string) ?? 'all'}
+          onValueChange={(value) =>
+            table.getColumn('productStatus')?.setFilterValue(value === 'all' ? '' : value)
+          }
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by product status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Product Status</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="inactive">Inactive</SelectItem>
+            <SelectItem value="draft">Draft</SelectItem>
           </SelectContent>
         </Select>
       </div>

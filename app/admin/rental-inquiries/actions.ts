@@ -2,10 +2,12 @@
 
 import { revalidatePath } from 'next/cache';
 import { updateInquiry, deleteInquiry } from '@/lib/rental-inquiries';
+import { toggleProductStatus } from '@/lib/rental-products';
 import { getCurrentUser } from '@/lib/auth';
 import { hasPermission, PERMISSIONS } from '@/lib/rbac';
 import { RentalInquiryStatus } from '@/types/rental-inquiry';
-import { logAction } from '@/lib/audit-log';
+import { ProductStatus } from '@/types/rental-product';
+import { logAction, logProductAction } from '@/lib/audit-log';
 
 /**
  * Update rental inquiry status
@@ -152,6 +154,75 @@ export async function deleteInquiryAction(inquiryId: string) {
     return {
       success: false,
       message: error instanceof Error ? error.message : 'Failed to delete inquiry',
+    };
+  }
+}
+
+/**
+ * Update product status from rental inquiries page
+ */
+export async function updateProductStatusAction(
+  productId: string,
+  status: ProductStatus
+) {
+  try {
+    // Check authentication
+    const currentUser = await getCurrentUser();
+    if (!currentUser) {
+      return { success: false, message: 'Unauthorized' };
+    }
+
+    // Check permissions - must have MANAGE_PRODUCTS permission to change product status
+    if (!hasPermission(currentUser.role, PERMISSIONS.MANAGE_PRODUCTS)) {
+      return { success: false, message: 'Insufficient permissions' };
+    }
+
+    // Update product status
+    const product = await toggleProductStatus(productId, status);
+
+    // Log action
+    await logProductAction(
+      'product.status.toggle',
+      currentUser.email || 'unknown',
+      currentUser.role as string,
+      product.id,
+      'success',
+      {
+        title: product.title,
+        newStatus: status,
+        source: 'rental_inquiries_page',
+      }
+    );
+
+    // Revalidate both rental inquiries and products pages
+    revalidatePath('/admin/rental-inquiries');
+    revalidatePath('/admin/products');
+    revalidatePath('/rent');
+
+    return {
+      success: true,
+      message: `Product status changed to ${status}`,
+    };
+  } catch (error) {
+    console.error('Error updating product status:', error);
+
+    // Log the failed action
+    const currentUser = await getCurrentUser();
+    if (currentUser) {
+      await logProductAction(
+        'product.status.toggle',
+        currentUser.email || 'unknown',
+        currentUser.role as string,
+        productId,
+        'failure',
+        { status },
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+    }
+
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to update product status',
     };
   }
 }

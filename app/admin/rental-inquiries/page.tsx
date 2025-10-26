@@ -1,10 +1,12 @@
 import { getCurrentUser } from '@/lib/auth';
 import { getAllInquiries, getInquiryStats } from '@/lib/rental-inquiries';
+import { getProduct } from '@/lib/rental-products';
 import { Role, hasPermission, PERMISSIONS } from '@/lib/rbac';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, Clock, CheckCircle, XCircle, Package } from 'lucide-react';
+import { Mail, Clock, CheckCircle, Package } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { InquiryTable } from '@/components/admin/inquiry-table';
+import { ProductStatus } from '@/types/rental-product';
 
 // Force dynamic rendering for this page since it fetches real-time data from Redis
 export const dynamic = 'force-dynamic';
@@ -24,6 +26,17 @@ export default async function RentalInquiriesPage() {
   // Fetch all inquiries and stats
   const inquiries = await getAllInquiries();
   const stats = await getInquiryStats();
+
+  // Enrich inquiries with product status
+  const enrichedInquiries = await Promise.all(
+    inquiries.map(async (inquiry) => {
+      const product = await getProduct(inquiry.productId);
+      return {
+        ...inquiry,
+        productStatus: product?.status || 'inactive' as ProductStatus,
+      };
+    })
+  );
 
   return (
     <div className="space-y-6">
@@ -144,7 +157,7 @@ export default async function RentalInquiriesPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <InquiryTable inquiries={inquiries} />
+          <InquiryTable inquiries={enrichedInquiries} />
         </CardContent>
       </Card>
     </div>
