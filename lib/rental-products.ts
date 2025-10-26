@@ -6,6 +6,7 @@
  */
 
 import { redis } from "./redist";
+import { deleteMultipleImages } from "./blob-helpers";
 import {
   RentalProduct,
   CreateRentalProductInput,
@@ -325,6 +326,22 @@ export async function updateProduct(
     await redis.set(REDIS_KEYS.productHandle(uniqueHandle), id);
   }
 
+  // Handle image updates - delete removed images from Vercel Blob
+  if (updates.images) {
+    const existingImageUrls = existingProduct.images.map(img => img.url);
+    const newImageUrls = updates.images.map(img => img.url);
+
+    // Find images that were removed (in existing but not in new)
+    const removedImageUrls = existingImageUrls.filter(
+      url => !newImageUrls.includes(url)
+    );
+
+    // Delete removed images from Vercel Blob
+    if (removedImageUrls.length > 0) {
+      await deleteMultipleImages(removedImageUrls);
+    }
+  }
+
   const updatedProduct: RentalProduct = {
     ...existingProduct,
     ...updates,
@@ -392,6 +409,12 @@ export async function deleteProduct(id: string): Promise<void> {
   const product = await getProduct(id);
   if (!product) {
     throw new Error("Product not found");
+  }
+
+  // Delete product images from Vercel Blob
+  if (product.images && product.images.length > 0) {
+    const imageUrls = product.images.map(img => img.url);
+    await deleteMultipleImages(imageUrls);
   }
 
   // Delete product from Redis

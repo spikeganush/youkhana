@@ -17,7 +17,7 @@
 
 Transform the Youkhana website from a Shopify-based e-commerce platform to a **rental product management system** where admins can add, manage, and display products available for rent (not purchase).
 
-**Status**: 🟡 In Progress (Phase 7 Completed)
+**Status**: 🟡 In Progress (Phase 8 Completed - Image Upload)
 **Started**: 2025-10-26
 **Target Completion**: TBD
 
@@ -377,16 +377,16 @@ stats:products                        // Hash - { total, active, featured, by_ca
 
 - [x] All files created successfully
 - [x] TypeScript types compile without errors
-- [ ] Can create a new product
-- [ ] Can edit existing product
-- [ ] Can delete product
-- [ ] Can toggle product status
-- [ ] Can toggle featured status
-- [ ] Table sorting works
-- [ ] Search functionality works
-- [ ] Category/status filters work
-- [ ] Pagination works
-- [ ] RBAC prevents non-admins from managing products
+- [x] Can create a new product
+- [x] Can edit existing product
+- [x] Can delete product
+- [x] Can toggle product status
+- [x] Can toggle featured status
+- [x] Table sorting works
+- [x] Search functionality works
+- [x] Category/status filters work
+- [ ] Pagination works (not tested yet)
+- [ ] RBAC prevents non-admins from managing products (not tested yet)
 
 **Next Steps**:
 
@@ -498,44 +498,46 @@ Enhanced the product description field with a Notion-style WYSIWYG editor using 
 
 ### Phase 8: Image Upload System ⏳ (2-3 hours)
 
-**Status**: 🔴 Not Started
-**Started**: _Not yet_
-**Completed**: _Not yet_
+**Status**: 🟢 Completed
+**Started**: 2025-10-26
+**Completed**: 2025-10-26
 
 #### Tasks
 
-- [ ] Install Vercel Blob
-  - [ ] `npm install @vercel/blob`
-  - [ ] Connect Vercel project to Blob storage (automatic in Vercel dashboard)
-  - [ ] Generate Blob read-write token
-- [ ] Configure Vercel Blob
-  - [ ] Add environment variables
-    - [ ] `BLOB_READ_WRITE_TOKEN` (from Vercel dashboard)
-  - [ ] Create upload API route
-    - [ ] `/app/api/upload/route.ts` - Server action for uploading to Blob
-- [ ] Create upload components
-  - [ ] `/components/admin/image-uploader.tsx` - Multi-image uploader
-  - [ ] `/components/admin/image-preview.tsx` - Image preview with delete
-  - [ ] Drag & drop support (use react-dropzone or native HTML5)
-  - [ ] Multiple file selection
-  - [ ] Image reordering (drag to reorder with dnd-kit)
-  - [ ] Delete uploaded images
-  - [ ] Upload progress indicator
-- [ ] Create upload utility functions
-  - [ ] `/lib/blob-helpers.ts`
-  - [ ] `uploadImage(file)` - Upload to Vercel Blob
-  - [ ] `deleteImage(pathname)` - Delete from Vercel Blob
-  - [ ] `reorderImages(images)` - Update image order
-- [ ] Integrate with product forms
-  - [ ] Add image uploader to product form
-  - [ ] Handle image array in form state
-  - [ ] Validate image uploads (max 4.5 MB per file, image types only)
-  - [ ] Show upload progress
-  - [ ] Client-side image optimization before upload (optional)
-- [ ] Handle image deletion
-  - [ ] Delete from Vercel Blob when product is deleted
-  - [ ] Delete from Vercel Blob when image is removed from product
-  - [ ] Cleanup orphaned images (optional cron job)
+- [x] Install Vercel Blob
+  - [x] `npm install @vercel/blob` (added 8 packages)
+  - [x] Connect Vercel project to Blob storage (automatic in Vercel dashboard)
+  - [x] Generate Blob read-write token (configured in Vercel dashboard)
+- [x] Configure Vercel Blob
+  - [x] Add environment variables
+    - [x] `BLOB_READ_WRITE_TOKEN` (from Vercel dashboard)
+  - [x] Create upload API route
+    - [x] `/app/api/upload/route.ts` - Server action for uploading to Blob
+  - [x] Configure Next.js image domains for Vercel Blob
+- [x] Create upload components
+  - [x] `/components/admin/image-uploader.tsx` - Multi-image uploader
+  - [x] `/components/admin/image-preview.tsx` - Image preview with delete
+  - [x] Drag & drop support (native HTML5)
+  - [x] Multiple file selection
+  - [x] Image reordering (left/right arrows)
+  - [x] Delete uploaded images
+  - [x] Upload progress indicator
+- [x] Create upload utility functions
+  - [x] `/lib/blob-helpers.ts`
+  - [x] `uploadImage(file)` - Upload to Vercel Blob
+  - [x] `deleteImage(url)` - Delete from Vercel Blob
+  - [x] `deleteMultipleImages(urls)` - Batch delete
+  - [x] `reorderImages(images)` - Update image order
+  - [x] `validateImageFile(file)` - Client-side validation
+  - [x] `formatFileSize(bytes)` - Helper for UI
+- [x] Integrate with product forms
+  - [x] Add image uploader to product form
+  - [x] Handle image array in form state
+  - [x] Validate image uploads (max 4.5 MB per file, image types only)
+  - [x] Show upload progress
+- [x] Handle image deletion
+  - [x] Delete from Vercel Blob when product is deleted
+  - [x] Delete from Vercel Blob when image is removed from product
 
 #### Files to Create
 
@@ -548,6 +550,7 @@ Enhanced the product description field with a Notion-style WYSIWYG editor using 
 
 - ✅ `/components/admin/product-form.tsx` - Add image uploader
 - ✅ `/lib/rental-products.ts` - Handle image deletion on product delete
+- ✅ `/next.config.js` - Add Vercel Blob hostname to image remotePatterns
 
 #### Environment Variables
 
@@ -567,7 +570,65 @@ BLOB_READ_WRITE_TOKEN="vercel_blob_rw_..."
 
 #### Notes
 
-_Add implementation details, decisions, and challenges here_
+**Implementation Completed**: 2025-10-26
+
+**Key Decisions**:
+
+- Used native HTML5 drag & drop instead of react-dropzone to reduce dependencies
+- Image reordering with left/right arrow buttons instead of dnd-kit (simpler UX)
+- Upload happens via `/api/upload` route with RBAC permission checks
+- Images stored in `products/` folder with timestamp prefix for uniqueness
+- Max 10 images per product, 4.5 MB per image
+- Automatic cleanup when products are deleted or images removed
+- Alt text editing for accessibility
+
+**Files Created**:
+
+1. `/app/api/upload/route.ts` - Authenticated upload endpoint with permission checks
+2. `/lib/blob-helpers.ts` - Complete image upload/delete utilities
+3. `/components/admin/image-uploader.tsx` - Multi-image uploader with drag & drop
+4. `/components/admin/image-preview.tsx` - Image preview with reorder, alt text, delete
+
+**Files Modified**:
+
+1. `/components/admin/product-form.tsx` - Integrated ImageUploader component
+2. `/lib/rental-products.ts` - Added image deletion in `deleteProduct()` and `updateProduct()`
+3. `/next.config.js` - Added `**.public.blob.vercel-storage.com` to image remotePatterns
+
+**Features Implemented**:
+
+- ✅ Multi-image upload with drag & drop
+- ✅ Image preview grid (2-4 columns responsive)
+- ✅ Image reordering with arrow buttons
+- ✅ Alt text editing for accessibility
+- ✅ Primary image badge (first image)
+- ✅ Delete individual images
+- ✅ Upload progress indicator
+- ✅ File validation (type & size)
+- ✅ Error handling with user-friendly messages
+- ✅ Automatic Vercel Blob cleanup on delete
+
+**Technical Details**:
+
+- Images use `RentalProductImage` type from rental-product.ts
+- Upload API checks for authentication and MANAGE_PRODUCTS permission
+- Images stored with structure: `{ url, pathname, alt, order }`
+- First image (order: 0) is the primary product image
+- Blob deletion is non-blocking (won't fail operations if blob delete fails)
+
+**Challenges Resolved**:
+
+- Fixed TypeScript type errors (ProductImage → RentalProductImage)
+- Fixed Next.js image configuration for Vercel Blob hostname
+- Fixed authentication imports (getServerSession → getSession)
+- Handled RBAC permission checks correctly (role-based, not email-based)
+
+**Testing Notes**:
+
+- Type check passes: `npx tsc --noEmit` ✅
+- Next.js config updated and requires dev server restart
+- Upload functionality tested and working
+- Image display requires adding Blob hostname to next.config.js (completed)
 
 **Vercel Blob Resources**:
 
@@ -690,13 +751,14 @@ This is a **future phase** - not part of immediate implementation. This would ad
 
 ## Progress Timeline
 
-| Date       | Phase    | Status         | Notes                                              |
-| ---------- | -------- | -------------- | -------------------------------------------------- |
-| 2025-10-26 | Planning | 🟢 Completed   | Implementation plan created                        |
-| 2025-10-26 | Phase 7  | 🟢 Completed   | Product CRUD foundation - All features implemented |
-| _TBD_      | Phase 8  | 🔴 Not Started | Image upload system                                |
-| _TBD_      | Phase 9  | 🔴 Not Started | Public rental catalog                              |
-| _TBD_      | Phase 10 | 🔴 Deferred    | Booking system (future)                            |
+| Date       | Phase     | Status         | Notes                                              |
+| ---------- | --------- | -------------- | -------------------------------------------------- |
+| 2025-10-26 | Planning  | 🟢 Completed   | Implementation plan created                        |
+| 2025-10-26 | Phase 7   | 🟢 Completed   | Product CRUD foundation - All features implemented |
+| 2025-10-26 | Phase 7.5 | 🟢 Completed   | Rich text editor (Novel) integration               |
+| 2025-10-26 | Phase 8   | 🟢 Completed   | Image upload system with Vercel Blob               |
+| _TBD_      | Phase 9   | 🔴 Not Started | Public rental catalog                              |
+| _TBD_      | Phase 10  | 🔴 Deferred    | Booking system (future)                            |
 
 ---
 
@@ -712,18 +774,16 @@ Uses existing packages:
 
 ### Phase 8 (Vercel Blob)
 
-New packages to install:
+New packages installed:
 
-- [ ] `@vercel/blob` - Vercel Blob SDK
+- ✅ `@vercel/blob` - Vercel Blob SDK (added 8 packages)
 
-Command: `npm install @vercel/blob`
+Command used: `npm install @vercel/blob`
 
-Optional packages for better UX:
+Optional packages (not needed):
 
-- [ ] `react-dropzone` - Drag & drop file uploads
-- [ ] `@dnd-kit/core` - Drag & drop for image reordering
-
-Command: `npm install react-dropzone @dnd-kit/core @dnd-kit/sortable`
+- ❌ `react-dropzone` - Used native HTML5 drag & drop instead
+- ❌ `@dnd-kit/core` - Used simple arrow button reordering instead
 
 ### Phase 9 (No new dependencies)
 
@@ -830,18 +890,23 @@ _Document any changes to the original plan here_
 
 ### Immediate Actions (Next Session)
 
-1. **Complete Phase 6**: Admin responsiveness fixes (see PHASE_6_RESPONSIVENESS.md)
-2. **Start Phase 7**: Product CRUD foundation
-   - Create TypeScript types
-   - Build Redis operations library
-   - Create admin products page
-   - Build product management UI
+1. **Start Phase 9**: Public Rental Catalog
+   - Create rental catalog page (`/app/rent/page.tsx`)
+   - Build product grid component
+   - Create rental product cards
+   - Implement product detail pages
+   - Add search and filtering
+   - Update navigation (add "Rent" link)
 
-### After Phase 7
+### Completed Phases
 
-3. **Phase 8**: Image upload with UploadThing
-4. **Phase 9**: Public rental catalog
-5. **Future**: Booking system (Phase 10)
+- ✅ **Phase 7**: Product CRUD foundation (completed 2025-10-26)
+- ✅ **Phase 7.5**: Rich text editor with Novel (completed 2025-10-26)
+- ✅ **Phase 8**: Image upload with Vercel Blob (completed 2025-10-26)
+
+### Future
+
+- **Phase 10**: Booking/reservation system (deferred)
 
 ---
 
@@ -947,5 +1012,5 @@ _Document any changes to the original plan here_
 ---
 
 **Last Updated**: 2025-10-26
-**Updated By**: Claude Code (Initial Planning)
-**Current Phase**: Planning Complete, Ready for Phase 7
+**Updated By**: Claude Code
+**Current Phase**: Phase 8 Complete, Ready for Phase 9 (Public Rental Catalog)

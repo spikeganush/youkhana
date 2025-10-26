@@ -16,7 +16,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Loader2, Plus, X } from 'lucide-react';
 import { NovelEditor } from './novel-editor';
+import { ImageUploader } from './image-uploader';
 import { JSONContent } from 'novel';
+import type { RentalProductImage } from '@/types/rental-product';
 
 interface ProductFormData {
   title: string;
@@ -25,6 +27,7 @@ interface ProductFormData {
   handle: string;
   category: string;
   tags: string[];
+  images: RentalProductImage[];
   rentalPrice: {
     daily: number;
     weekly?: number;
@@ -75,6 +78,7 @@ export function ProductForm({
     handle: initialData?.handle || '',
     category: initialData?.category || '',
     tags: initialData?.tags || [],
+    images: initialData?.images || [],
     rentalPrice: {
       daily: initialData?.rentalPrice?.daily || 0,
       weekly: initialData?.rentalPrice?.weekly,
@@ -114,7 +118,7 @@ export function ProductForm({
 
   const handleInputChange = (
     field: keyof ProductFormData,
-    value: string | number | boolean | undefined
+    value: string | number | boolean | RentalProductImage[] | undefined
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -259,6 +263,19 @@ export function ProductForm({
             {formData.shortDescription.length}/150 characters
           </p>
         </div>
+      </div>
+
+      {/* Product Images */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold">Product Images</h3>
+        <ImageUploader
+          images={formData.images}
+          onChange={(images) => handleInputChange('images', images)}
+          maxImages={10}
+        />
+        <p className="text-xs text-muted-foreground">
+          First image will be used as the primary product image
+        </p>
       </div>
 
       {/* Pricing */}
