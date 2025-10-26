@@ -220,7 +220,10 @@ export async function getAuditLogs(
 
       if (logData) {
         try {
-          const log = JSON.parse(logData as string) as AuditLog;
+          // Upstash Redis automatically parses JSON, so check if it's already an object
+          const log = typeof logData === 'string'
+            ? JSON.parse(logData) as AuditLog
+            : logData as AuditLog;
           logs.push(log);
         } catch (parseError) {
           console.error('Failed to parse audit log:', parseError);
@@ -294,7 +297,10 @@ export async function getAuditLog(logId: string): Promise<AuditLog | null> {
       return null;
     }
 
-    return JSON.parse(logData as string) as AuditLog;
+    // Upstash Redis automatically parses JSON, so check if it's already an object
+    return typeof logData === 'string'
+      ? JSON.parse(logData) as AuditLog
+      : logData as AuditLog;
   } catch (error) {
     console.error('Failed to get audit log:', error);
     return null;

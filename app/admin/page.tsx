@@ -6,12 +6,81 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Users, Mail, Package, TrendingUp } from "lucide-react";
+import {
+  Users,
+  Mail,
+  Package,
+  TrendingUp,
+  UserPlus,
+  UserMinus,
+  UserCog,
+  LogIn,
+  LogOut,
+  Settings,
+  PackagePlus,
+  PackageMinus,
+  Eye,
+  EyeOff,
+  Star,
+  Clock,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 import { redis } from "@/lib/redist";
 import { getProductCount } from "@/lib/rental-products";
+import { getAuditLogs, type AuditLog } from "@/lib/audit-log";
+import { formatDistanceToNow } from "date-fns";
 
 // Force dynamic rendering for this page since it fetches real-time data from Redis
 export const dynamic = "force-dynamic";
+
+// Helper to get icon for audit log action
+function getAuditIcon(action: AuditLog["action"]) {
+  const iconMap: Record<AuditLog["action"], React.ElementType> = {
+    "user.create": UserPlus,
+    "user.update.role": UserCog,
+    "user.update.name": UserCog,
+    "user.delete": UserMinus,
+    "invitation.create": Mail,
+    "invitation.resend": Mail,
+    "invitation.cancel": Mail,
+    "invitation.accept": Mail,
+    "auth.signin": LogIn,
+    "auth.signout": LogOut,
+    "auth.signup": UserPlus,
+    "settings.update": Settings,
+    "product.create": PackagePlus,
+    "product.update": Package,
+    "product.delete": PackageMinus,
+    "product.status.toggle": Eye,
+    "product.featured.toggle": Star,
+  };
+  return iconMap[action] || Clock;
+}
+
+// Helper to get human-readable description for audit log
+function getAuditDescription(log: AuditLog): string {
+  const actionDescriptions: Record<AuditLog["action"], string> = {
+    "user.create": `created user ${log.resource}`,
+    "user.update.role": `updated role for ${log.resource}`,
+    "user.update.name": `updated name for ${log.resource}`,
+    "user.delete": `deleted user ${log.resource}`,
+    "invitation.create": `invited ${log.resource}`,
+    "invitation.resend": `resent invitation to ${log.resource}`,
+    "invitation.cancel": `cancelled invitation for ${log.resource}`,
+    "invitation.accept": `accepted invitation`,
+    "auth.signin": `signed in`,
+    "auth.signout": `signed out`,
+    "auth.signup": `signed up`,
+    "settings.update": `updated settings`,
+    "product.create": `created product`,
+    "product.update": `updated product`,
+    "product.delete": `deleted product`,
+    "product.status.toggle": `toggled status for product`,
+    "product.featured.toggle": `toggled featured status`,
+  };
+  return actionDescriptions[log.action] || log.action;
+}
 
 async function getAdminStats() {
   try {
@@ -43,6 +112,9 @@ async function getAdminStats() {
 
 export default async function AdminDashboard() {
   const stats = await getAdminStats();
+
+  // Fetch recent audit logs (last 10)
+  const recentLogs = await getAuditLogs(10);
 
   return (
     <div className="space-y-6">
@@ -126,9 +198,57 @@ export default async function AdminDashboard() {
             <CardDescription>Latest system events</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-muted-foreground">
-              No recent activity to display
-            </div>
+            {recentLogs.length === 0 ? (
+              <div className="text-sm text-muted-foreground">
+                No recent activity to display
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {recentLogs.map((log) => {
+                  const Icon = getAuditIcon(log.action);
+                  const StatusIcon =
+                    log.result === "success" ? CheckCircle2 : XCircle;
+                  return (
+                    <div
+                      key={log.id}
+                      className="flex items-start gap-3 rounded-lg border p-3 text-sm"
+                    >
+                      <div className="mt-0.5">
+                        <Icon className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">
+                            {log.performedBy}
+                          </span>
+                          <span className="text-muted-foreground">
+                            {getAuditDescription(log)}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span>
+                            {formatDistanceToNow(new Date(log.timestamp), {
+                              addSuffix: true,
+                            })}
+                          </span>
+                          <span>•</span>
+                          <span className="capitalize">{log.category.replace(/_/g, " ")}</span>
+                        </div>
+                      </div>
+                      <div className="mt-0.5">
+                        <StatusIcon
+                          className={`h-4 w-4 ${
+                            log.result === "success"
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
