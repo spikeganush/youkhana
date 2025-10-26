@@ -2,20 +2,25 @@ import Contact from '@/components/Contact/contact';
 import ProductDetailImages from '@/components/Shop/product/Product-detail-images';
 import ProductOptions from '@/components/Shop/product/Product-options';
 import PurchaseButton from '@/components/Shop/product/Purchase-button';
-import { getSingleHandleProduct } from '@/lib/shopify';
+import { getProductByHandle } from '@/lib/rental-products';
+import { rentalProductToShopifyProduct } from '@/lib/product-transformer';
 import { cleanHtml } from '@/lib/utils';
 
 export default async function Product({
   params,
 }: {
-  params: { handle: string };
+  params: Promise<{ handle: string }>;
 }) {
-  const { handle } = params;
-  const product = await getSingleHandleProduct(handle);
+  const { handle } = await params;
 
-  if (!product) {
+  // Fetch rental product from Redis
+  const rentalProduct = await getProductByHandle(handle);
+  if (!rentalProduct) {
     return <div>Product not found</div>;
   }
+
+  // Transform to Shopify format for compatibility with existing components
+  const product = rentalProductToShopifyProduct(rentalProduct);
 
   const htmlDescription = cleanHtml(product.descriptionHtml);
 
