@@ -33,6 +33,7 @@ import {
 } from '@/components/ui/select';
 import { EditProductDialog } from './edit-product-dialog';
 import { DeleteProductDialog } from './delete-product-dialog';
+import { ProductPreviewDialog } from './product-preview-dialog';
 import {
   Edit,
   Trash2,
@@ -42,6 +43,7 @@ import {
   Star,
   Eye,
   EyeOff,
+  FileText,
 } from 'lucide-react';
 import { toggleProductStatusAction, toggleFeaturedAction } from '@/app/admin/products/actions';
 import { toast } from 'sonner';
@@ -55,6 +57,7 @@ export function ProductTable({ products }: ProductTableProps) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [editProduct, setEditProduct] = useState<RentalProduct | null>(null);
   const [deleteProduct, setDeleteProduct] = useState<RentalProduct | null>(null);
+  const [previewProduct, setPreviewProduct] = useState<RentalProduct | null>(null);
   const [togglingStatus, setTogglingStatus] = useState<string | null>(null);
   const [togglingFeatured, setTogglingFeatured] = useState<string | null>(null);
 
@@ -272,7 +275,16 @@ export function ProductTable({ products }: ProductTableProps) {
               <Button
                 variant="ghost"
                 size="icon"
+                onClick={() => setPreviewProduct(product)}
+                title="Preview product"
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => setEditProduct(product)}
+                title="Edit product"
               >
                 <Edit className="h-4 w-4" />
               </Button>
@@ -280,6 +292,7 @@ export function ProductTable({ products }: ProductTableProps) {
                 variant="ghost"
                 size="icon"
                 onClick={() => setDeleteProduct(product)}
+                title="Delete product"
               >
                 <Trash2 className="h-4 w-4 text-destructive" />
               </Button>
@@ -450,6 +463,11 @@ export function ProductTable({ products }: ProductTableProps) {
       </div>
 
       {/* Dialogs */}
+      <ProductPreviewDialog
+        product={previewProduct}
+        open={!!previewProduct}
+        onOpenChange={(open) => !open && setPreviewProduct(null)}
+      />
       <EditProductDialog
         product={editProduct}
         open={!!editProduct}

@@ -15,6 +15,8 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Loader2, Plus, X } from 'lucide-react';
+import { NovelEditor } from './novel-editor';
+import { JSONContent } from 'novel';
 
 interface ProductFormData {
   title: string;
@@ -232,13 +234,13 @@ export function ProductForm({
 
         <div className="space-y-2">
           <Label htmlFor="description">Description *</Label>
-          <Textarea
-            id="description"
+          <NovelEditor
             value={formData.description}
-            onChange={(e) => handleInputChange('description', e.target.value)}
-            placeholder="Full product description (supports markdown)"
-            rows={5}
-            required
+            onChange={(json) => {
+              // Store as stringified JSON
+              handleInputChange('description', JSON.stringify(json));
+            }}
+            className="min-h-[200px]"
           />
         </div>
 
