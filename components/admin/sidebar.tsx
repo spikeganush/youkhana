@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   Users,
@@ -10,15 +10,15 @@ import {
   Settings,
   Package,
   Inbox,
-} from 'lucide-react';
+} from "lucide-react";
 
 const navigation = [
-  { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-  { name: 'Users', href: '/admin/users', icon: Users },
-  { name: 'Invitations', href: '/admin/invitations', icon: Mail },
-  { name: 'Products', href: '/admin/products', icon: Package },
-  { name: 'Rental Inquiries', href: '/admin/rental-inquiries', icon: Inbox },
-  { name: 'Settings', href: '/admin/settings', icon: Settings },
+  { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { name: "Users", href: "/admin/users", icon: Users },
+  { name: "Invitations", href: "/admin/invitations", icon: Mail },
+  { name: "Products", href: "/admin/products", icon: Package },
+  { name: "Rental Inquiries", href: "/admin/rental-inquiries", icon: Inbox },
+  // { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
 interface SidebarProps {
@@ -53,10 +53,10 @@ export function Sidebar({ onNavigate }: SidebarProps) {
               key={item.name}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 isActive
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
               )}
               onClick={onNavigate}
             >

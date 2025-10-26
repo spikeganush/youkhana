@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { X, GripVertical, ChevronLeft, ChevronRight, Star } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useState } from "react";
+import Image from "next/image";
+import { X, GripVertical, ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { cn } from '@/lib/utils';
-import type { RentalProductImage } from '@/types/rental-product';
+} from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
+import type { RentalProductImage } from "@/types/rental-product";
 
 interface ImagePreviewProps {
   image: RentalProductImage;
@@ -59,7 +59,7 @@ export function ImagePreview({
       {/* Image */}
       <Image
         src={image.url}
-        alt={image.alt || 'Product image'}
+        alt={image.alt || "Product image"}
         fill
         className="object-cover"
         sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -145,7 +145,7 @@ export function ImagePreview({
                   />
                   <p className="text-xs text-muted-foreground">
                     Alt text helps screen readers and improves SEO. Describe
-                    what's in the image.
+                    what&apos;s in the image.
                   </p>
                 </div>
                 <div className="flex justify-end gap-2">
