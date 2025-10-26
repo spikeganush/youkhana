@@ -2,6 +2,7 @@ import { StatsCard } from '@/components/admin/stats-card';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, Mail, Package, TrendingUp } from 'lucide-react';
 import { redis } from '@/lib/redist';
+import { getProductCount } from '@/lib/rental-products';
 
 // Force dynamic rendering for this page since it fetches real-time data from Redis
 export const dynamic = 'force-dynamic';
@@ -16,15 +17,20 @@ async function getAdminStats() {
     const pendingInvitationsSet = await redis.smembers('invitations:pending');
     const pendingInvitations = pendingInvitationsSet?.length || 0;
 
+    // Get total products count
+    const totalProducts = await getProductCount();
+
     return {
       totalUsers,
       pendingInvitations,
+      totalProducts,
     };
   } catch (error) {
     console.error('Error fetching admin stats:', error);
     return {
       totalUsers: 0,
       pendingInvitations: 0,
+      totalProducts: 0,
     };
   }
 }
@@ -58,8 +64,8 @@ export default async function AdminDashboard() {
         />
         <StatsCard
           title="Products"
-          value="Coming Soon"
-          description="Total products"
+          value={stats.totalProducts}
+          description="Total rental products"
           icon={Package}
         />
         <StatsCard
@@ -96,6 +102,15 @@ export default async function AdminDashboard() {
               <div className="font-medium">Manage Users</div>
               <div className="text-sm text-muted-foreground">
                 View and manage existing users
+              </div>
+            </a>
+            <a
+              href="/admin/products"
+              className="block rounded-lg border p-3 transition-colors hover:bg-accent"
+            >
+              <div className="font-medium">Manage Products</div>
+              <div className="text-sm text-muted-foreground">
+                Add and manage rental products
               </div>
             </a>
           </CardContent>

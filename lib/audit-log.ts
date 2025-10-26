@@ -91,7 +91,13 @@ export type AuditAction =
   | 'auth.signout'
   | 'auth.signup'
   // Settings actions
-  | 'settings.update';
+  | 'settings.update'
+  // Product management actions
+  | 'product.create'
+  | 'product.update'
+  | 'product.delete'
+  | 'product.status.toggle'
+  | 'product.featured.toggle';
 
 /**
  * Audit category for grouping
@@ -100,7 +106,8 @@ export type AuditCategory =
   | 'user_management'
   | 'invitation_management'
   | 'authentication'
-  | 'settings';
+  | 'settings'
+  | 'product_management';
 
 /**
  * Configuration for audit logs
@@ -405,6 +412,33 @@ export async function logAuthAction(
     action,
     category: 'authentication',
     resource: performedBy,
+    result,
+    details,
+    errorMessage,
+  });
+}
+
+/**
+ * Helper function to create audit log for product actions
+ */
+export async function logProductAction(
+  action: Extract<
+    AuditAction,
+    'product.create' | 'product.update' | 'product.delete' | 'product.status.toggle' | 'product.featured.toggle'
+  >,
+  performedBy: string,
+  performedByRole: string,
+  resource: string,
+  result: 'success' | 'failure',
+  details?: Record<string, unknown>,
+  errorMessage?: string
+): Promise<AuditLog> {
+  return logAuditEvent({
+    performedBy,
+    performedByRole,
+    action,
+    category: 'product_management',
+    resource,
     result,
     details,
     errorMessage,
