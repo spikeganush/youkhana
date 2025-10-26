@@ -5,8 +5,8 @@
  * across the admin system.
  */
 
-import { z } from 'zod';
-import { ROLES } from './rbac';
+import { z } from "zod";
+import { ROLES } from "./rbac";
 
 /**
  * Email validation schema
@@ -16,8 +16,8 @@ import { ROLES } from './rbac';
  */
 export const emailSchema = z
   .string()
-  .min(1, 'Email is required')
-  .email('Invalid email format')
+  .min(1, "Email is required")
+  .email("Invalid email format")
   .toLowerCase()
   .transform((val) => val.trim());
 
@@ -29,8 +29,8 @@ export const emailSchema = z
  */
 export const nameSchema = z
   .string()
-  .min(1, 'Name is required')
-  .max(100, 'Name must be less than 100 characters')
+  .min(1, "Name is required")
+  .max(100, "Name must be less than 100 characters")
   .transform((val) => val.trim());
 
 /**
@@ -49,7 +49,7 @@ export const roleSchema = z.enum([
  */
 export const invitationRoleSchema = z.enum([ROLES.ADMIN, ROLES.MEMBER] as [
   string,
-  ...string[],
+  ...string[]
 ]);
 
 /**
@@ -58,8 +58,8 @@ export const invitationRoleSchema = z.enum([ROLES.ADMIN, ROLES.MEMBER] as [
  */
 export const tokenSchema = z
   .string()
-  .length(64, 'Invalid token format')
-  .regex(/^[a-f0-9]{64}$/, 'Invalid token format');
+  .length(64, "Invalid token format")
+  .regex(/^[a-f0-9]{64}$/, "Invalid token format");
 
 /**
  * User creation schema
@@ -161,8 +161,7 @@ export function safeValidate<T extends z.ZodType>(
   }
 
   // Extract first error message
-  const errorMessage =
-    result.error.issues[0]?.message || 'Validation failed';
+  const errorMessage = result.error.issues[0]?.message || "Validation failed";
 
   return { success: false, error: errorMessage };
 }
@@ -174,11 +173,11 @@ export function safeValidate<T extends z.ZodType>(
  */
 export const handleSchema = z
   .string()
-  .min(1, 'Handle is required')
-  .max(100, 'Handle must be less than 100 characters')
+  .min(1, "Handle is required")
+  .max(100, "Handle must be less than 100 characters")
   .regex(
     /^[a-z0-9-]+$/,
-    'Handle must only contain lowercase letters, numbers, and hyphens'
+    "Handle must only contain lowercase letters, numbers, and hyphens"
   )
   .transform((val) => val.trim().toLowerCase());
 
@@ -187,8 +186,8 @@ export const handleSchema = z
  */
 export const productTitleSchema = z
   .string()
-  .min(1, 'Title is required')
-  .max(200, 'Title must be less than 200 characters')
+  .min(1, "Title is required")
+  .max(200, "Title must be less than 200 characters")
   .transform((val) => val.trim());
 
 /**
@@ -196,8 +195,8 @@ export const productTitleSchema = z
  */
 export const productDescriptionSchema = z
   .string()
-  .min(10, 'Description must be at least 10 characters')
-  .max(5000, 'Description must be less than 5000 characters')
+  .min(10, "Description must be at least 10 characters")
+  .max(5000, "Description must be less than 5000 characters")
   .transform((val) => val.trim());
 
 /**
@@ -205,7 +204,7 @@ export const productDescriptionSchema = z
  */
 export const productShortDescriptionSchema = z
   .string()
-  .max(150, 'Short description must be less than 150 characters')
+  .max(150, "Short description must be less than 150 characters")
   .transform((val) => val.trim())
   .optional();
 
@@ -213,87 +212,87 @@ export const productShortDescriptionSchema = z
  * Rental price validation schema
  */
 export const rentalPriceSchema = z.object({
-  daily: z.number().positive('Daily price must be positive'),
-  weekly: z.number().positive('Weekly price must be positive').optional(),
-  monthly: z.number().positive('Monthly price must be positive').optional(),
+  daily: z.number().positive("Daily price must be positive"),
+  weekly: z.number().positive("Weekly price must be positive").optional(),
+  monthly: z.number().positive("Monthly price must be positive").optional(),
 });
 
 /**
  * Product image validation schema
  */
 export const productImageSchema = z.object({
-  url: z.string().url('Invalid image URL'),
-  pathname: z.string().min(1, 'Image pathname is required'),
-  alt: z.string().min(1, 'Image alt text is required'),
-  order: z.number().int().min(0, 'Image order must be 0 or greater'),
+  url: z.string().url("Invalid image URL"),
+  pathname: z.string().min(1, "Image pathname is required"),
+  alt: z.string().min(1, "Image alt text is required"),
+  order: z.number().int().min(0, "Image order must be 0 or greater"),
 });
 
 /**
  * Product status validation schema
  */
-export const productStatusSchema = z.enum(['active', 'inactive', 'draft']);
+export const productStatusSchema = z.enum(["active", "inactive", "draft"]);
 
 /**
  * Product category validation schema
  */
 export const productCategorySchema = z
   .string()
-  .min(1, 'Category is required')
-  .max(50, 'Category must be less than 50 characters')
+  .min(1, "Category is required")
+  .max(50, "Category must be less than 50 characters")
   .transform((val) => val.trim());
 
 /**
  * Create rental product schema
  */
-export const createRentalProductSchema = z.object({
-  handle: handleSchema.optional(),
-  title: productTitleSchema,
-  description: productDescriptionSchema,
-  shortDescription: productShortDescriptionSchema,
-  rentalPrice: rentalPriceSchema,
-  deposit: z.number().min(0, 'Deposit cannot be negative').optional(),
-  currency: z.string().default('USD'),
-  totalQuantity: z.number().int().min(0, 'Total quantity cannot be negative'),
-  availableQuantity: z
-    .number()
-    .int()
-    .min(0, 'Available quantity cannot be negative'),
-  images: z.array(productImageSchema).default([]),
-  category: productCategorySchema,
-  tags: z.array(z.string()).default([]),
-  specifications: z.record(z.string(), z.string()).optional(),
-  terms: z.string().optional(),
-  minRentalDays: z
-    .number()
-    .int()
-    .positive('Minimum rental days must be positive')
-    .optional(),
-  maxRentalDays: z
-    .number()
-    .int()
-    .positive('Maximum rental days must be positive')
-    .optional(),
-  status: productStatusSchema.default('draft'),
-  featured: z.boolean().default(false),
-  createdBy: emailSchema,
-}).refine(
-  (data) => data.availableQuantity <= data.totalQuantity,
-  {
-    message: 'Available quantity cannot exceed total quantity',
-    path: ['availableQuantity'],
-  }
-).refine(
-  (data) => {
-    if (data.minRentalDays && data.maxRentalDays) {
-      return data.minRentalDays <= data.maxRentalDays;
+export const createRentalProductSchema = z
+  .object({
+    handle: handleSchema.optional(),
+    title: productTitleSchema,
+    description: productDescriptionSchema,
+    shortDescription: productShortDescriptionSchema,
+    rentalPrice: rentalPriceSchema,
+    deposit: z.number().min(0, "Deposit cannot be negative").optional(),
+    currency: z.string().default("AUD"),
+    totalQuantity: z.number().int().min(0, "Total quantity cannot be negative"),
+    availableQuantity: z
+      .number()
+      .int()
+      .min(0, "Available quantity cannot be negative"),
+    images: z.array(productImageSchema).default([]),
+    category: productCategorySchema,
+    tags: z.array(z.string()).default([]),
+    specifications: z.record(z.string(), z.string()).optional(),
+    terms: z.string().optional(),
+    minRentalDays: z
+      .number()
+      .int()
+      .positive("Minimum rental days must be positive")
+      .optional(),
+    maxRentalDays: z
+      .number()
+      .int()
+      .positive("Maximum rental days must be positive")
+      .optional(),
+    status: productStatusSchema.default("draft"),
+    featured: z.boolean().default(false),
+    createdBy: emailSchema,
+  })
+  .refine((data) => data.availableQuantity <= data.totalQuantity, {
+    message: "Available quantity cannot exceed total quantity",
+    path: ["availableQuantity"],
+  })
+  .refine(
+    (data) => {
+      if (data.minRentalDays && data.maxRentalDays) {
+        return data.minRentalDays <= data.maxRentalDays;
+      }
+      return true;
+    },
+    {
+      message: "Minimum rental days cannot exceed maximum rental days",
+      path: ["minRentalDays"],
     }
-    return true;
-  },
-  {
-    message: 'Minimum rental days cannot exceed maximum rental days',
-    path: ['minRentalDays'],
-  }
-);
+  );
 
 /**
  * Update rental product schema
@@ -305,13 +304,17 @@ export const updateRentalProductSchema = z.object({
   description: productDescriptionSchema.optional(),
   shortDescription: productShortDescriptionSchema,
   rentalPrice: rentalPriceSchema.optional(),
-  deposit: z.number().min(0, 'Deposit cannot be negative').optional(),
+  deposit: z.number().min(0, "Deposit cannot be negative").optional(),
   currency: z.string().optional(),
-  totalQuantity: z.number().int().min(0, 'Total quantity cannot be negative').optional(),
+  totalQuantity: z
+    .number()
+    .int()
+    .min(0, "Total quantity cannot be negative")
+    .optional(),
   availableQuantity: z
     .number()
     .int()
-    .min(0, 'Available quantity cannot be negative')
+    .min(0, "Available quantity cannot be negative")
     .optional(),
   images: z.array(productImageSchema).optional(),
   category: productCategorySchema.optional(),
@@ -321,12 +324,12 @@ export const updateRentalProductSchema = z.object({
   minRentalDays: z
     .number()
     .int()
-    .positive('Minimum rental days must be positive')
+    .positive("Minimum rental days must be positive")
     .optional(),
   maxRentalDays: z
     .number()
     .int()
-    .positive('Maximum rental days must be positive')
+    .positive("Maximum rental days must be positive")
     .optional(),
   status: productStatusSchema.optional(),
   featured: z.boolean().optional(),
@@ -337,13 +340,13 @@ export const updateRentalProductSchema = z.object({
  * Delete product schema
  */
 export const deleteProductSchema = z.object({
-  id: z.string().uuid('Invalid product ID'),
+  id: z.string().uuid("Invalid product ID"),
 });
 
 /**
  * Toggle product status schema
  */
 export const toggleProductStatusSchema = z.object({
-  id: z.string().uuid('Invalid product ID'),
+  id: z.string().uuid("Invalid product ID"),
   status: productStatusSchema,
 });

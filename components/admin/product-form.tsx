@@ -47,14 +47,15 @@ interface ProductFormProps {
 }
 
 const COMMON_CATEGORIES = [
-  'Camera',
-  'Lens',
-  'Lighting',
-  'Audio',
-  'Tripod & Support',
-  'Drone',
-  'Video',
+  'Dresses',
+  'Tops & Blouses',
+  'Bottoms',
+  'Outerwear',
+  'Jumpsuits & Rompers',
+  'Sets & Co-ords',
   'Accessories',
+  'Jersey Collection',
+  'Couture',
   'Other',
 ];
 
@@ -186,7 +187,7 @@ export function ProductForm({
             id="title"
             value={formData.title}
             onChange={(e) => handleInputChange('title', e.target.value)}
-            placeholder="Sony A7 III Full Frame Camera"
+            placeholder="Silk Braided Midi Dress"
             required
           />
         </div>
@@ -202,7 +203,7 @@ export function ProductForm({
               handleInputChange('handle', e.target.value);
               setHandleManuallyEdited(true);
             }}
-            placeholder="sony-a7iii-camera"
+            placeholder="silk-braided-midi-dress"
             required
           />
           <p className="text-xs text-muted-foreground">
@@ -400,13 +401,13 @@ export function ProductForm({
           <Input
             value={specKey}
             onChange={(e) => setSpecKey(e.target.value)}
-            placeholder="Key (e.g., Sensor)"
+            placeholder="Key (e.g., Material)"
             className="flex-1"
           />
           <Input
             value={specValue}
             onChange={(e) => setSpecValue(e.target.value)}
-            placeholder="Value (e.g., Full Frame)"
+            placeholder="Value (e.g., Silk Blend)"
             className="flex-1"
           />
           <Button

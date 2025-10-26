@@ -12,10 +12,38 @@ export interface RentalProductImage {
   order: number;            // Display order (0 = primary)
 }
 
+export interface ProductOption {
+  id: string;
+  name: string;             // e.g., "Size", "Color"
+  values: string[];         // e.g., ["XS", "S", "M", "L", "XL"] or ["Ivory", "Black", "Navy"]
+}
+
+export interface ProductVariant {
+  id: string;
+  title: string;            // e.g., "S / Ivory"
+  availableForSale: boolean;
+  selectedOptions: {
+    name: string;           // e.g., "Size"
+    value: string;          // e.g., "S"
+  }[];
+  rentalPrice: RentalPrice; // Variant-specific pricing (optional)
+  availableQuantity: number; // Available units for this specific variant
+}
+
 export interface RentalPrice {
   daily: number;            // Price per day (required)
   weekly?: number;          // Price per week (optional)
   monthly?: number;         // Price per month (optional)
+}
+
+export interface Money {
+  amount: string;
+  currencyCode: string;
+}
+
+export interface PriceRange {
+  minVariantPrice: Money;
+  maxVariantPrice: Money;
 }
 
 export type ProductStatus = 'active' | 'inactive' | 'draft';
@@ -30,25 +58,31 @@ export interface RentalProduct {
   description: string;                      // Full description (supports markdown)
   shortDescription?: string;                // Brief description for cards (max 150 chars)
 
-  // Rental Pricing
+  // Variants & Options (for size/color selection)
+  options?: ProductOption[];                // Available options (Size, Color) - optional for simple products
+  variants?: ProductVariant[];              // All combinations of options - optional for simple products
+
+  // Rental Pricing (base price, can be overridden per variant)
   rentalPrice: RentalPrice;
+  priceRange?: PriceRange;                  // Min/max prices across all variants (for display) - auto-generated
   deposit?: number;                         // Security deposit amount
-  currency: string;                         // Default: "USD"
+  currency: string;                         // Default: "AUD"
 
   // Inventory Management
-  totalQuantity: number;                    // Total units owned
-  availableQuantity: number;                // Currently available for rent
+  totalQuantity: number;                    // Total units owned across all variants
+  availableQuantity: number;                // Currently available for rent across all variants
 
   // Media
   images: RentalProductImage[];
+  featuredImage?: RentalProductImage;       // Primary image (first in images array) - optional for backward compatibility
 
   // Categorization & Search
-  category: string;                         // e.g., "Camera", "Lens", "Lighting", "Audio"
+  category: string;                         // e.g., "Dresses", "Tops", "Outerwear", "Accessories"
   tags: string[];                           // Searchable tags
 
   // Product Details
   specifications?: Record<string, string>;  // Key-value pairs
-  // Example: { "Sensor": "Full Frame", "Megapixels": "24.2 MP", "Weight": "650g" }
+  // Example: { "Size": "S", "Material": "Silk Blend", "Color": "Ivory", "Fit": "Relaxed" }
 
   // Rental Terms
   terms?: string;                           // Rental terms specific to this product
@@ -69,13 +103,17 @@ export interface RentalProduct {
 /**
  * Input type for creating a new rental product
  * Omits auto-generated fields like id, createdAt, updatedAt
- * Handle is optional as it can be auto-generated from title
+ * Handle, priceRange, featuredImage, options, and variants are optional as they can be auto-generated
  */
 export type CreateRentalProductInput = Omit<
   RentalProduct,
-  'id' | 'createdAt' | 'updatedAt' | 'handle'
+  'id' | 'createdAt' | 'updatedAt' | 'handle' | 'priceRange' | 'featuredImage' | 'options' | 'variants'
 > & {
   handle?: string;
+  priceRange?: PriceRange;           // Auto-calculated if not provided
+  featuredImage?: RentalProductImage; // Defaults to first image if not provided
+  options?: ProductOption[];          // Optional, can be empty for simple products
+  variants?: ProductVariant[];        // Optional, can be empty for simple products
 };
 
 /**

@@ -1,6 +1,7 @@
 # Rental Products Implementation Plan
 
 > **IMPORTANT RULES FOR THIS FILE**:
+>
 > 1. This file MUST be updated after completing each phase or major task
 > 2. Update the status checkboxes as work progresses
 > 3. Add implementation notes, decisions, and gotchas in the "Notes" sections
@@ -25,17 +26,20 @@ Transform the Youkhana website from a Shopify-based e-commerce platform to a **r
 ## Business Context
 
 ### Current Situation
+
 - Website originally designed for e-commerce with Shopify integration
 - Shopify code remains in codebase but is deprecated (keeping for future reference)
 - Owner wants to shift business model from **selling** to **renting** products
 
 ### New Business Model
+
 - **Primary Purpose**: Rental product catalog and management
 - **Admin Goal**: Easy product management (add/edit/delete rental items)
 - **User Goal**: Browse rental catalog, view pricing, request rentals
 - **No e-commerce transactions** (for now - booking/payment system is future phase)
 
 ### Key Difference from Shopify
+
 - Products show **rental pricing** (daily/weekly/monthly) instead of purchase price
 - Availability tracking (units available vs total units)
 - Security deposit concept
@@ -46,24 +50,29 @@ Transform the Youkhana website from a Shopify-based e-commerce platform to a **r
 ## Architecture Decisions
 
 ### Product Storage: Redis
+
 **Reason**: Consistent with existing stack, fast, serverless-friendly
 
 **Alternatives Considered**:
+
 - ❌ PostgreSQL: Requires separate database, more infrastructure
 - ❌ MongoDB: Extra service, monthly cost
 - ❌ Keep Shopify: Business model has changed, no longer selling products
 - ✅ Redis: Already in use, fast, sufficient for product catalog
 
 ### Image Storage: Vercel Blob
+
 **Reason**: Native Vercel integration, 1 GB is sufficient for rental product catalog, zero configuration
 
 **Alternatives Considered**:
+
 - ⚠️ UploadThing: 2-10 GB free but adds external dependency
 - ⚠️ Cloudinary: Good free tier (25 credits/month) but expensive paid plans ($89+/month)
 - ⚠️ AWS S3: Complex setup, requires credit card, not beginner-friendly
 - ✅ Vercel Blob: 1 GB free, native Vercel integration, built into Next.js ecosystem
 
 **Vercel Blob Free Tier (Hobby Plan)**:
+
 - Storage: 1 GB/month
 - Bandwidth: 10 GB/month
 - Simple Operations: First 10,000 free
@@ -71,6 +80,7 @@ Transform the Youkhana website from a Shopify-based e-commerce platform to a **r
 - Perfect for rental product catalog (1 GB = ~200-500 high-quality product images)
 
 **Why 1 GB is Enough**:
+
 - Rental business typically has 50-200 products max
 - With Next.js Image optimization, images are compressed efficiently
 - Multiple images per product: 3-5 images × 100 products = 300-500 images
@@ -78,9 +88,11 @@ Transform the Youkhana website from a Shopify-based e-commerce platform to a **r
 - Total estimated usage: 60-250 MB (well under 1 GB limit)
 
 ### UI Components: Reuse Shopify Design
+
 **Reason**: Product cards, grid layout, and detail pages already designed and responsive
 
 **Strategy**:
+
 - Keep existing components: `Products-Card.tsx`, product grid layouts
 - Modify to show rental pricing instead of purchase price
 - Add rental-specific fields (daily/weekly/monthly rates, deposit, availability)
@@ -90,15 +102,15 @@ Transform the Youkhana website from a Shopify-based e-commerce platform to a **r
 
 ## Tech Stack
 
-| Component | Technology | Version | Purpose |
-|-----------|-----------|---------|---------|
-| Product Storage | Upstash Redis | 1.34.3 | Product data storage |
-| Image Upload | Vercel Blob | latest | Product image hosting |
-| UI Components | Shadcn UI | latest | Admin forms & tables |
-| Data Tables | TanStack Table | latest | Product management table |
-| Form Handling | React Hook Form | latest | Product forms |
-| Validation | Zod | latest | Input validation |
-| Image Optimization | Next.js Image | 16 | Image rendering |
+| Component          | Technology      | Version | Purpose                  |
+| ------------------ | --------------- | ------- | ------------------------ |
+| Product Storage    | Upstash Redis   | 1.34.3  | Product data storage     |
+| Image Upload       | Vercel Blob     | latest  | Product image hosting    |
+| UI Components      | Shadcn UI       | latest  | Admin forms & tables     |
+| Data Tables        | TanStack Table  | latest  | Product management table |
+| Form Handling      | React Hook Form | latest  | Product forms            |
+| Validation         | Zod             | latest  | Input validation         |
+| Image Optimization | Next.js Image   | 16      | Image rendering          |
 
 ---
 
@@ -109,57 +121,57 @@ Transform the Youkhana website from a Shopify-based e-commerce platform to a **r
 ```typescript
 interface RentalProduct {
   // Identifiers
-  id: string;                    // Unique UUID
-  handle: string;                // URL slug (e.g., "sony-a7iii-camera")
+  id: string; // Unique UUID
+  handle: string; // URL slug (e.g., "sony-a7iii-camera")
 
   // Basic Info
-  title: string;                 // Product name
-  description: string;           // Full description (supports markdown)
-  shortDescription?: string;     // Brief description for cards (max 150 chars)
+  title: string; // Product name
+  description: string; // Full description (supports markdown)
+  shortDescription?: string; // Brief description for cards (max 150 chars)
 
   // Rental Pricing
   rentalPrice: {
-    daily: number;               // Price per day (required)
-    weekly?: number;             // Price per week (optional)
-    monthly?: number;            // Price per month (optional)
+    daily: number; // Price per day (required)
+    weekly?: number; // Price per week (optional)
+    monthly?: number; // Price per month (optional)
   };
-  deposit?: number;              // Security deposit amount
-  currency: string;              // Default: "USD"
+  deposit?: number; // Security deposit amount
+  currency: string; // Default: "AUD"
 
   // Inventory Management
-  totalQuantity: number;         // Total units owned
-  availableQuantity: number;     // Currently available for rent
+  totalQuantity: number; // Total units owned
+  availableQuantity: number; // Currently available for rent
 
   // Media
   images: Array<{
-    url: string;                 // Vercel Blob URL
-    pathname: string;            // Blob pathname for deletion
-    alt: string;                 // Alt text for accessibility
-    order: number;               // Display order (0 = primary)
+    url: string; // Vercel Blob URL
+    pathname: string; // Blob pathname for deletion
+    alt: string; // Alt text for accessibility
+    order: number; // Display order (0 = primary)
   }>;
 
   // Categorization & Search
-  category: string;              // e.g., "Camera", "Lens", "Lighting", "Audio"
-  tags: string[];                // Searchable tags
+  category: string; // e.g., "Camera", "Lens", "Lighting", "Audio"
+  tags: string[]; // Searchable tags
 
   // Product Details
   specifications?: Record<string, string>; // Key-value pairs
   // Example: { "Sensor": "Full Frame", "Megapixels": "24.2 MP", "Weight": "650g" }
 
   // Rental Terms
-  terms?: string;                // Rental terms specific to this product
-  minRentalDays?: number;        // Minimum rental period
-  maxRentalDays?: number;        // Maximum rental period
+  terms?: string; // Rental terms specific to this product
+  minRentalDays?: number; // Minimum rental period
+  maxRentalDays?: number; // Maximum rental period
 
   // Status & Visibility
-  status: 'active' | 'inactive' | 'draft';
-  featured: boolean;             // Show on homepage/featured section
+  status: "active" | "inactive" | "draft";
+  featured: boolean; // Show on homepage/featured section
 
   // Metadata
-  createdAt: string;             // ISO timestamp
-  updatedAt: string;             // ISO timestamp
-  createdBy: string;             // Admin email who created
-  lastModifiedBy?: string;       // Admin email who last edited
+  createdAt: string; // ISO timestamp
+  updatedAt: string; // ISO timestamp
+  createdBy: string; // Admin email who created
+  lastModifiedBy?: string; // Admin email who last edited
 }
 ```
 
@@ -237,11 +249,13 @@ stats:products                        // Hash - { total, active, featured, by_ca
 ## Implementation Phases
 
 ### Phase 7: Product CRUD Foundation ⏳ (4-5 hours)
+
 **Status**: 🟢 Completed
 **Started**: 2025-10-26
 **Completed**: 2025-10-26
 
 #### Tasks
+
 - [x] Create TypeScript types
   - [x] `/types/rental-product.ts` - RentalProduct interface
 - [x] Create Redis operations library
@@ -292,6 +306,7 @@ stats:products                        // Hash - { total, active, featured, by_ca
   - [x] Update `/app/admin/page.tsx` - Add products stats to dashboard
 
 #### Files to Create
+
 - ✅ `/types/rental-product.ts`
 - ✅ `/lib/rental-products.ts`
 - ✅ `/app/admin/products/page.tsx`
@@ -303,6 +318,7 @@ stats:products                        // Hash - { total, active, featured, by_ca
 - ✅ `/components/admin/product-form.tsx`
 
 #### Files to Modify
+
 - ✅ `/lib/rbac.ts` - Add product permissions
 - ✅ `/lib/validations.ts` - Add product schemas
 - ✅ `/components/admin/sidebar.tsx` - Enable products link
@@ -313,6 +329,7 @@ stats:products                        // Hash - { total, active, featured, by_ca
 **Implementation Completed**: 2025-10-26
 
 **Key Decisions**:
+
 - Used AUD as default currency instead of USD (changed in rental-products.ts line 82)
 - Product form does not include image upload functionality (will be added in Phase 8)
 - Auto-generate URL handles from product titles with manual override option
@@ -320,6 +337,7 @@ stats:products                        // Hash - { total, active, featured, by_ca
 - Comprehensive validation schemas with cross-field validation (e.g., availableQuantity <= totalQuantity)
 
 **Files Created**:
+
 1. `/types/rental-product.ts` - Complete type definitions with helper types
 2. `/lib/rental-products.ts` - Full CRUD operations with Redis integration
 3. `/app/admin/products/page.tsx` - Admin products dashboard with stats
@@ -331,11 +349,13 @@ stats:products                        // Hash - { total, active, featured, by_ca
 9. `/components/admin/product-table.tsx` - Full-featured table with filtering & sorting
 
 **Files Modified**:
+
 1. `/lib/rbac.ts` - Added MANAGE_PRODUCTS and VIEW_PRODUCTS permissions
 2. `/lib/validations.ts` - Added comprehensive product validation schemas
 3. `/app/admin/page.tsx` - Added product stats to dashboard
 
 **Features Implemented**:
+
 - ✅ Full CRUD operations for rental products
 - ✅ Auto-generated URL-safe handles from product titles
 - ✅ Product status management (active/inactive/draft)
@@ -354,6 +374,7 @@ stats:products                        // Hash - { total, active, featured, by_ca
 - ✅ Audit logging for all product actions
 
 **Testing Checklist**:
+
 - [x] All files created successfully
 - [x] TypeScript types compile without errors
 - [ ] Can create a new product
@@ -368,6 +389,7 @@ stats:products                        // Hash - { total, active, featured, by_ca
 - [ ] RBAC prevents non-admins from managing products
 
 **Next Steps**:
+
 - Phase 8: Image Upload System (Vercel Blob integration)
 - Test the product management system thoroughly
 - Create sample products for testing the public catalog (Phase 9)
@@ -375,11 +397,13 @@ stats:products                        // Hash - { total, active, featured, by_ca
 ---
 
 ### Phase 8: Image Upload System ⏳ (2-3 hours)
+
 **Status**: 🔴 Not Started
 **Started**: _Not yet_
 **Completed**: _Not yet_
 
 #### Tasks
+
 - [ ] Install Vercel Blob
   - [ ] `npm install @vercel/blob`
   - [ ] Connect Vercel project to Blob storage (automatic in Vercel dashboard)
@@ -414,22 +438,26 @@ stats:products                        // Hash - { total, active, featured, by_ca
   - [ ] Cleanup orphaned images (optional cron job)
 
 #### Files to Create
+
 - ✅ `/app/api/upload/route.ts` - Upload API endpoint
 - ✅ `/components/admin/image-uploader.tsx` - Multi-image uploader component
 - ✅ `/components/admin/image-preview.tsx` - Image preview component
 - ✅ `/lib/blob-helpers.ts` - Blob upload/delete utilities
 
 #### Files to Modify
+
 - ✅ `/components/admin/product-form.tsx` - Add image uploader
 - ✅ `/lib/rental-products.ts` - Handle image deletion on product delete
 
 #### Environment Variables
+
 ```env
 # Vercel Blob Storage (Get from Vercel Dashboard → Storage → Blob)
 BLOB_READ_WRITE_TOKEN="vercel_blob_rw_..."
 ```
 
 **How to Get Blob Token**:
+
 1. Open your project in Vercel dashboard
 2. Go to Storage tab
 3. Create a new Blob store (or use existing)
@@ -438,9 +466,11 @@ BLOB_READ_WRITE_TOKEN="vercel_blob_rw_..."
 6. Vercel automatically provides it in production
 
 #### Notes
+
 _Add implementation details, decisions, and challenges here_
 
 **Vercel Blob Resources**:
+
 - Docs: https://vercel.com/docs/storage/vercel-blob
 - Quick Start: https://vercel.com/docs/storage/vercel-blob/quickstart
 - Usage & Pricing: https://vercel.com/docs/storage/vercel-blob/usage-and-pricing
@@ -449,11 +479,13 @@ _Add implementation details, decisions, and challenges here_
 ---
 
 ### Phase 9: Public Rental Catalog ⏳ (3-4 hours)
+
 **Status**: 🔴 Not Started
 **Started**: _Not yet_
 **Completed**: _Not yet_
 
 #### Tasks
+
 - [ ] Create rental catalog page
   - [ ] `/app/rent/page.tsx` - Main rental catalog
   - [ ] Fetch active products from Redis
@@ -492,6 +524,7 @@ _Add implementation details, decisions, and challenges here_
   - [ ] Link to rental catalog
 
 #### Files to Create
+
 - ✅ `/app/rent/page.tsx`
 - ✅ `/app/rent/[handle]/page.tsx`
 - ✅ `/components/Rent/ProductGrid.tsx`
@@ -501,11 +534,13 @@ _Add implementation details, decisions, and challenges here_
 - ✅ `/components/Rent/ImageGallery.tsx` - Product detail image gallery
 
 #### Files to Modify
+
 - ✅ `/components/Header/Desktop-Nav.tsx` - Add Rent link
 - ✅ `/components/Header/Mobile-Nav.tsx` - Add Rent link
 - ✅ `/app/page.tsx` - Add featured products section
 
 #### Responsive Design Checklist
+
 - [ ] Product grid responsive (1/2/4 columns)
 - [ ] Product cards mobile-friendly
 - [ ] Product detail page stacks on mobile
@@ -514,17 +549,21 @@ _Add implementation details, decisions, and challenges here_
 - [ ] All images use Next.js Image optimization
 
 #### Notes
+
 _Add implementation details, decisions, and challenges here_
 
 ---
 
 ### Phase 10: Booking/Reservation System ⏳ (Future)
+
 **Status**: 🔴 Not Started - Future Enhancement
 **Started**: _Not yet_
 **Completed**: _Not yet_
 
 #### Overview
+
 This is a **future phase** - not part of immediate implementation. This would add:
+
 - Rental request/booking functionality
 - Calendar availability view
 - Admin approval workflow
@@ -533,6 +572,7 @@ This is a **future phase** - not part of immediate implementation. This would ad
 - Potential payment integration (Stripe)
 
 #### High-Level Tasks (Deferred)
+
 - [ ] Design reservation data model
 - [ ] Create booking request form
 - [ ] Build admin approval interface
@@ -543,44 +583,52 @@ This is a **future phase** - not part of immediate implementation. This would ad
 - [ ] Build customer-facing booking dashboard
 
 #### Notes
+
 **Decision**: Focus on product management and catalog display first. Booking system is a major feature that can be built later once the core rental catalog is stable and being used.
 
 ---
 
 ## Progress Timeline
 
-| Date | Phase | Status | Notes |
-|------|-------|--------|-------|
-| 2025-10-26 | Planning | 🟢 Completed | Implementation plan created |
-| 2025-10-26 | Phase 7 | 🟢 Completed | Product CRUD foundation - All features implemented |
-| _TBD_ | Phase 8 | 🔴 Not Started | Image upload system |
-| _TBD_ | Phase 9 | 🔴 Not Started | Public rental catalog |
-| _TBD_ | Phase 10 | 🔴 Deferred | Booking system (future) |
+| Date       | Phase    | Status         | Notes                                              |
+| ---------- | -------- | -------------- | -------------------------------------------------- |
+| 2025-10-26 | Planning | 🟢 Completed   | Implementation plan created                        |
+| 2025-10-26 | Phase 7  | 🟢 Completed   | Product CRUD foundation - All features implemented |
+| _TBD_      | Phase 8  | 🔴 Not Started | Image upload system                                |
+| _TBD_      | Phase 9  | 🔴 Not Started | Public rental catalog                              |
+| _TBD_      | Phase 10 | 🔴 Deferred    | Booking system (future)                            |
 
 ---
 
 ## Dependencies to Install
 
 ### Phase 7 (No new dependencies)
+
 Uses existing packages:
+
 - ✅ `@tanstack/react-table` (already installed)
 - ✅ `zod` (already installed)
 - ✅ `react-hook-form` (already installed)
 
 ### Phase 8 (Vercel Blob)
+
 New packages to install:
+
 - [ ] `@vercel/blob` - Vercel Blob SDK
 
 Command: `npm install @vercel/blob`
 
 Optional packages for better UX:
+
 - [ ] `react-dropzone` - Drag & drop file uploads
 - [ ] `@dnd-kit/core` - Drag & drop for image reordering
 
 Command: `npm install react-dropzone @dnd-kit/core @dnd-kit/sortable`
 
 ### Phase 9 (No new dependencies)
+
 Uses existing packages:
+
 - ✅ `next/image` (Next.js built-in)
 - ✅ Existing UI components
 
@@ -591,12 +639,14 @@ Uses existing packages:
 ### New Variables to Add
 
 #### Phase 8 (Vercel Blob)
+
 ```env
 # Vercel Blob Storage
 BLOB_READ_WRITE_TOKEN="vercel_blob_rw_..."
 ```
 
 #### How to Get Vercel Blob Token
+
 1. Open your project in Vercel dashboard (https://vercel.com)
 2. Go to **Storage** tab
 3. Click **Create Database** → Select **Blob**
@@ -613,12 +663,15 @@ BLOB_READ_WRITE_TOKEN="vercel_blob_rw_..."
 ### Deprecating Shopify
 
 #### Files to Keep (Reference Only)
+
 - `/lib/shopify/` - Keep entire directory for reference
 - `/components/Shop/Products-Card.tsx` - Keep as template for rental cards
 - `/app/shop/page.tsx` - Keep for layout reference
 
 #### Files to Mark as Deprecated
+
 Add comment at top of Shopify-related files:
+
 ```typescript
 /**
  * @deprecated This file uses Shopify integration which is no longer active.
@@ -627,11 +680,13 @@ Add comment at top of Shopify-related files:
 ```
 
 #### Files to Mark
+
 - [ ] `/lib/shopify/*.ts`
 - [ ] `/app/shop/page.tsx`
 - [ ] `/components/Shop/*` (except reusable patterns)
 
 #### Navigation Updates
+
 - [ ] Remove "Shop" link from navigation (or redirect to /rent)
 - [ ] Add "Rent" link to navigation
 - [ ] Update any internal links pointing to /shop
@@ -641,11 +696,13 @@ Add comment at top of Shopify-related files:
 ## Known Issues & Blockers
 
 ### Issues
+
 _Document any issues, bugs, or challenges encountered here_
 
 - None yet
 
 ### Blockers
+
 _Document anything blocking progress here_
 
 - None yet
@@ -655,12 +712,14 @@ _Document anything blocking progress here_
 ## Decisions & Changes Log
 
 ### Architecture Decisions
+
 - **2025-10-26**: Chose Vercel Blob for image storage - 1 GB is sufficient for rental catalog, native integration
 - **2025-10-26**: Chose Redis for product storage for consistency with existing stack
 - **2025-10-26**: Decided to reuse Shopify UI patterns (grid, cards) for faster development
 - **2025-10-26**: Deferred booking/reservation system to Phase 10 (future enhancement)
 
 ### Deviations from Original Plan
+
 _Document any changes to the original plan here_
 
 - None yet
@@ -670,6 +729,7 @@ _Document any changes to the original plan here_
 ## Next Steps
 
 ### Immediate Actions (Next Session)
+
 1. **Complete Phase 6**: Admin responsiveness fixes (see PHASE_6_RESPONSIVENESS.md)
 2. **Start Phase 7**: Product CRUD foundation
    - Create TypeScript types
@@ -678,6 +738,7 @@ _Document any changes to the original plan here_
    - Build product management UI
 
 ### After Phase 7
+
 3. **Phase 8**: Image upload with UploadThing
 4. **Phase 9**: Public rental catalog
 5. **Future**: Booking system (Phase 10)
@@ -687,21 +748,25 @@ _Document any changes to the original plan here_
 ## Resources & Documentation
 
 ### UploadThing Documentation
+
 - Main docs: https://docs.uploadthing.com
 - Next.js App Router: https://docs.uploadthing.com/getting-started/appdir
 - Pricing: https://uploadthing.com/pricing
 - Free tier: 2-10 GB storage, $10/month for 100 GB
 
 ### Image Upload Alternatives Research
+
 - **Vercel Blob**: 1 GB free, $0.023/GB-month ✅ **CHOSEN** (sufficient for rental catalog)
 - **Cloudinary**: 25 credits/month free, $89+/month paid (expensive)
 - **UploadThing**: 2-10 GB free, $10/month for 100 GB (unnecessary for our needs)
 
 ### TanStack Table Documentation
+
 - Main docs: https://tanstack.com/table/latest
 - Already used in user management
 
 ### Vercel Blob Documentation
+
 - Main docs: https://vercel.com/docs/storage/vercel-blob
 - Quick Start: https://vercel.com/docs/storage/vercel-blob/quickstart
 - SDK Reference: https://vercel.com/docs/storage/vercel-blob/using-blob-sdk
@@ -709,6 +774,7 @@ _Document any changes to the original plan here_
 - Server Uploads: https://vercel.com/docs/storage/vercel-blob/server-upload
 
 ### Next.js Image Optimization
+
 - Image component: https://nextjs.org/docs/app/api-reference/components/image
 - Already used throughout the app
 - Works seamlessly with Vercel Blob URLs
@@ -718,6 +784,7 @@ _Document any changes to the original plan here_
 ## Testing Checklist
 
 ### Phase 7 Testing
+
 - [ ] Can create a new product with all fields
 - [ ] Can edit existing product
 - [ ] Can delete product
@@ -730,6 +797,7 @@ _Document any changes to the original plan here_
 - [ ] RBAC prevents non-admins from managing products
 
 ### Phase 8 Testing
+
 - [ ] Can upload single image
 - [ ] Can upload multiple images
 - [ ] Can delete image from product
@@ -740,6 +808,7 @@ _Document any changes to the original plan here_
 - [ ] File size validation works (max size enforced)
 
 ### Phase 9 Testing
+
 - [ ] Rental catalog page displays all active products
 - [ ] Product cards show correct information
 - [ ] Product cards are responsive (1/2/4 columns)
@@ -756,6 +825,7 @@ _Document any changes to the original plan here_
 ## Maintenance Notes
 
 ### How to Update This File
+
 1. Update status checkboxes as you complete tasks
 2. Update the "Progress Timeline" table with dates
 3. Add notes in the "Notes" sections for each phase
@@ -765,6 +835,7 @@ _Document any changes to the original plan here_
 7. Commit this file after each major milestone
 
 ### For AI Assistants Starting New Sessions
+
 1. Read `PROJECT.md` first to understand the overall project
 2. Read `ADMIN_IMPLEMENTATION_PLAN.md` to understand admin system progress
 3. Read this file to understand rental products progress

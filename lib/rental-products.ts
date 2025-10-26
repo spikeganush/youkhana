@@ -75,12 +75,35 @@ export async function createProduct(
 
   const now = new Date().toISOString();
 
+  const currency = input.currency || "AUD";
+
+  // Auto-generate priceRange if not provided
+  const priceRange = input.priceRange || {
+    minVariantPrice: {
+      amount: input.rentalPrice.daily.toString(),
+      currencyCode: currency,
+    },
+    maxVariantPrice: {
+      amount: input.rentalPrice.daily.toString(),
+      currencyCode: currency,
+    },
+  };
+
+  // Auto-set featuredImage to first image if provided
+  const featuredImage = input.featuredImage || (input.images && input.images.length > 0
+    ? input.images[0]
+    : undefined);
+
   const product: RentalProduct = {
     ...input,
     id,
     handle,
-    currency: input.currency || "AUD",
+    currency,
     images: input.images || [],
+    featuredImage,
+    priceRange,
+    options: input.options || [],
+    variants: input.variants || [],
     tags: input.tags || [],
     category: input.category || "Uncategorized",
     status: input.status || "draft",
@@ -131,13 +154,21 @@ export async function getProduct(id: string): Promise<RentalProduct | null> {
     return null;
   }
 
-  const productJson = await redis.get<string>(REDIS_KEYS.product(id));
+  const productData = await redis.get(REDIS_KEYS.product(id));
 
-  if (!productJson || typeof productJson !== 'string') {
+  if (!productData) {
     return null;
   }
 
-  const product: RentalProduct = JSON.parse(productJson);
+  // Handle both cases: Redis returning a string OR an already-parsed object
+  let product: RentalProduct;
+  if (typeof productData === 'string') {
+    product = JSON.parse(productData);
+  } else {
+    // Redis client already deserialized the JSON
+    product = productData as RentalProduct;
+  }
+
   return product;
 }
 
@@ -151,8 +182,8 @@ export async function getProductByHandle(
     return null;
   }
 
-  const id = await redis.get<string>(REDIS_KEYS.productHandle(handle));
-  if (!id) {
+  const id = await redis.get(REDIS_KEYS.productHandle(handle));
+  if (!id || typeof id !== 'string') {
     return null;
   }
 
@@ -190,6 +221,7 @@ export async function getAllProducts(
     const ids = await redis.zrange(REDIS_KEYS.allProducts, 0, -1, {
       rev: true,
     });
+
     if (Array.isArray(ids)) {
       productIds = ids.filter((id): id is string => typeof id === 'string');
     }
