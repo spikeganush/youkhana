@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -11,12 +11,12 @@ import {
   flexRender,
   SortingState,
   ColumnFiltersState,
-} from '@tanstack/react-table';
-import { User } from '@/lib/redis-auth';
-import { Role, getRoleLabel, ROLES } from '@/lib/rbac';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+} from "@tanstack/react-table";
+import { User } from "@/lib/redis-auth";
+import { Role, getRoleLabel, ROLES } from "@/lib/rbac";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -24,17 +24,23 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { EditUserDialog } from './edit-user-dialog';
-import { DeleteUserDialog } from './delete-user-dialog';
-import { Edit, Trash2, ChevronLeft, ChevronRight, ArrowUpDown } from 'lucide-react';
+} from "@/components/ui/select";
+import { EditUserDialog } from "./edit-user-dialog";
+import { DeleteUserDialog } from "./delete-user-dialog";
+import {
+  Edit,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpDown,
+} from "lucide-react";
 
 interface UserTableProps {
   users: User[];
@@ -42,7 +48,11 @@ interface UserTableProps {
   currentUserEmail: string;
 }
 
-export function UserTable({ users, currentUserRole, currentUserEmail }: UserTableProps) {
+export function UserTable({
+  users,
+  currentUserRole,
+  currentUserEmail,
+}: UserTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [editUser, setEditUser] = useState<User | null>(null);
@@ -51,23 +61,25 @@ export function UserTable({ users, currentUserRole, currentUserEmail }: UserTabl
   const getRoleBadgeVariant = (role: Role) => {
     switch (role) {
       case ROLES.MASTER_ADMIN:
-        return 'default';
+        return "default";
       case ROLES.ADMIN:
-        return 'secondary';
+        return "secondary";
       default:
-        return 'outline';
+        return "outline";
     }
   };
 
   const columns: ColumnDef<User>[] = useMemo(
     () => [
       {
-        accessorKey: 'name',
+        accessorKey: "name",
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
               className="-ml-4"
             >
               Name
@@ -79,8 +91,10 @@ export function UserTable({ users, currentUserRole, currentUserEmail }: UserTabl
           const isCurrentUser = row.original.email === currentUserEmail;
           return (
             <div>
-              <div className="font-medium">{row.getValue('name')}</div>
-              <div className="text-sm text-muted-foreground">{row.original.email}</div>
+              <div className="font-medium">{row.getValue("name")}</div>
+              <div className="text-sm text-muted-foreground">
+                {row.original.email}
+              </div>
               {isCurrentUser && (
                 <Badge variant="outline" className="mt-1 text-xs">
                   You
@@ -91,12 +105,14 @@ export function UserTable({ users, currentUserRole, currentUserEmail }: UserTabl
         },
       },
       {
-        accessorKey: 'role',
+        accessorKey: "role",
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
               className="-ml-4"
             >
               Role
@@ -105,7 +121,7 @@ export function UserTable({ users, currentUserRole, currentUserEmail }: UserTabl
           );
         },
         cell: ({ row }) => {
-          const role = row.getValue('role') as Role;
+          const role = row.getValue("role") as Role;
           return (
             <Badge variant={getRoleBadgeVariant(role)}>
               {getRoleLabel(role)}
@@ -113,16 +129,18 @@ export function UserTable({ users, currentUserRole, currentUserEmail }: UserTabl
           );
         },
         filterFn: (row, id, value) => {
-          return value === 'all' || row.getValue(id) === value;
+          return value === "all" || row.getValue(id) === value;
         },
       },
       {
-        accessorKey: 'createdAt',
+        accessorKey: "createdAt",
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
               className="-ml-4"
             >
               Created
@@ -131,7 +149,7 @@ export function UserTable({ users, currentUserRole, currentUserEmail }: UserTabl
           );
         },
         cell: ({ row }) => {
-          const date = new Date(row.getValue('createdAt'));
+          const date = new Date(row.getValue("createdAt"));
           return (
             <div>
               <div>{date.toLocaleDateString()}</div>
@@ -143,10 +161,10 @@ export function UserTable({ users, currentUserRole, currentUserEmail }: UserTabl
         },
       },
       {
-        accessorKey: 'lastSignIn',
-        header: 'Last Sign In',
+        accessorKey: "lastSignIn",
+        header: "Last Sign In",
         cell: ({ row }) => {
-          const lastSignIn = row.getValue('lastSignIn') as string | undefined;
+          const lastSignIn = row.getValue("lastSignIn") as string | undefined;
           if (!lastSignIn) {
             return <span className="text-muted-foreground">Never</span>;
           }
@@ -162,8 +180,8 @@ export function UserTable({ users, currentUserRole, currentUserEmail }: UserTabl
         },
       },
       {
-        id: 'actions',
-        header: 'Actions',
+        id: "actions",
+        header: "Actions",
         cell: ({ row }) => {
           const user = row.original;
           const isMasterAdmin = user.role === ROLES.MASTER_ADMIN;
@@ -194,7 +212,7 @@ export function UserTable({ users, currentUserRole, currentUserEmail }: UserTabl
     ],
     [currentUserEmail]
   );
-
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: users,
     columns,
@@ -221,17 +239,19 @@ export function UserTable({ users, currentUserRole, currentUserEmail }: UserTabl
       <div className="flex items-center gap-4">
         <Input
           placeholder="Search by name or email..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
 
         <Select
-          value={(table.getColumn('role')?.getFilterValue() as string) ?? 'all'}
+          value={(table.getColumn("role")?.getFilterValue() as string) ?? "all"}
           onValueChange={(value) =>
-            table.getColumn('role')?.setFilterValue(value === 'all' ? '' : value)
+            table
+              .getColumn("role")
+              ?.setFilterValue(value === "all" ? "" : value)
           }
         >
           <SelectTrigger className="w-[180px]">
@@ -249,7 +269,7 @@ export function UserTable({ users, currentUserRole, currentUserEmail }: UserTabl
       </div>
 
       {/* Table */}
-      <div className="rounded-md border">
+      <div className="overflow-x-auto rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -273,14 +293,20 @@ export function UserTable({ users, currentUserRole, currentUserEmail }: UserTabl
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   No users found.
                 </TableCell>
               </TableRow>
@@ -292,11 +318,16 @@ export function UserTable({ users, currentUserRole, currentUserEmail }: UserTabl
       {/* Pagination */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
-          Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{' '}
+          Showing{" "}
+          {table.getState().pagination.pageIndex *
+            table.getState().pagination.pageSize +
+            1}{" "}
+          to{" "}
           {Math.min(
-            (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+            (table.getState().pagination.pageIndex + 1) *
+              table.getState().pagination.pageSize,
             table.getFilteredRowModel().rows.length
-          )}{' '}
+          )}{" "}
           of {table.getFilteredRowModel().rows.length} users
         </div>
         <div className="flex gap-2">

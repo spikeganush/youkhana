@@ -19,14 +19,22 @@ const navigation = [
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  onNavigate?: () => void;
+}
+
+export function Sidebar({ onNavigate }: SidebarProps) {
   const pathname = usePathname();
 
   return (
     <div className="flex h-full w-64 flex-col border-r bg-background">
       {/* Logo */}
       <div className="flex h-16 items-center border-b px-6">
-        <Link href="/admin" className="flex items-center gap-2 font-semibold">
+        <Link
+          href="/admin"
+          className="flex items-center gap-2 font-semibold"
+          onClick={onNavigate}
+        >
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             Y
           </div>
@@ -48,6 +56,7 @@ export function Sidebar() {
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
               )}
+              onClick={onNavigate}
             >
               <item.icon className="h-5 w-5" />
               {item.name}
