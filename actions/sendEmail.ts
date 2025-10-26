@@ -203,7 +203,7 @@ export const sendRentalInquiryEmail = async ({
 
     const data = await resend.emails.send({
       from: "Youkhana Rentals <rentals@callmespike.me>",
-      to: "florian.jourdain@gmail.com", // Testing email
+      to: "yyoukhanaa@gmail.com",
       reply_to: customerEmail,
       subject: `New Rental Inquiry: ${productTitle}`,
       html: `
