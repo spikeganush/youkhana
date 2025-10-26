@@ -9,6 +9,7 @@ import {
   Mail,
   Settings,
   Package,
+  Inbox,
 } from 'lucide-react';
 
 const navigation = [
@@ -16,6 +17,7 @@ const navigation = [
   { name: 'Users', href: '/admin/users', icon: Users },
   { name: 'Invitations', href: '/admin/invitations', icon: Mail },
   { name: 'Products', href: '/admin/products', icon: Package },
+  { name: 'Rental Inquiries', href: '/admin/rental-inquiries', icon: Inbox },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 

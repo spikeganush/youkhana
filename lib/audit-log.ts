@@ -444,3 +444,41 @@ export async function logProductAction(
     errorMessage,
   });
 }
+
+/**
+ * Generic helper function to log any action
+ * Use this for custom actions that don't fit existing categories
+ */
+export async function logAction(params: {
+  action: string;
+  resourceType: string;
+  resourceId: string;
+  details?: Record<string, unknown>;
+  performedBy: string;
+  performedByRole?: string;
+  result?: 'success' | 'failure';
+  errorMessage?: string;
+}): Promise<void> {
+  try {
+    // Create a simple audit trail that doesn't require strict typing
+    const logEntry = {
+      id: generateLogId(),
+      timestamp: new Date().toISOString(),
+      ...params,
+      performedByRole: params.performedByRole || 'user',
+      result: params.result || 'success',
+    };
+
+    // Store with a simple key
+    const key = `auditlog:custom:${logEntry.id}`;
+    await redis.setex(key, AUDIT_CONFIG.TTL_SECONDS, JSON.stringify(logEntry));
+
+    // Add to global sorted set
+    const score = Date.now();
+    await redis.zadd('auditlogs:custom', { score, member: logEntry.id });
+    await redis.expire('auditlogs:custom', AUDIT_CONFIG.TTL_SECONDS);
+  } catch (error) {
+    console.error('Failed to log action:', error);
+    // Don't throw - audit logging should not break the application
+  }
+}

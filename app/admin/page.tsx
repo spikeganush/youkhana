@@ -1,20 +1,26 @@
-import { StatsCard } from '@/components/admin/stats-card';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Mail, Package, TrendingUp } from 'lucide-react';
-import { redis } from '@/lib/redist';
-import { getProductCount } from '@/lib/rental-products';
+import { StatsCard } from "@/components/admin/stats-card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Users, Mail, Package, TrendingUp } from "lucide-react";
+import { redis } from "@/lib/redist";
+import { getProductCount } from "@/lib/rental-products";
 
 // Force dynamic rendering for this page since it fetches real-time data from Redis
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 async function getAdminStats() {
   try {
     // Get total users count
-    const userEmailsSet = await redis.smembers('users:all');
+    const userEmailsSet = await redis.smembers("users:all");
     const totalUsers = userEmailsSet?.length || 0;
 
     // Get pending invitations count
-    const pendingInvitationsSet = await redis.smembers('invitations:pending');
+    const pendingInvitationsSet = await redis.smembers("invitations:pending");
     const pendingInvitations = pendingInvitationsSet?.length || 0;
 
     // Get total products count
@@ -26,7 +32,7 @@ async function getAdminStats() {
       totalProducts,
     };
   } catch (error) {
-    console.error('Error fetching admin stats:', error);
+    console.error("Error fetching admin stats:", error);
     return {
       totalUsers: 0,
       pendingInvitations: 0,
@@ -81,9 +87,7 @@ export default async function AdminDashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>
-              Common administrative tasks
-            </CardDescription>
+            <CardDescription>Common administrative tasks</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
             <a
@@ -128,51 +132,6 @@ export default async function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Getting Started */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Getting Started</CardTitle>
-          <CardDescription>
-            Set up your admin space
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-start gap-4">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              1
-            </div>
-            <div>
-              <div className="font-medium">Invite your first user</div>
-              <div className="text-sm text-muted-foreground">
-                Go to the Invitations page to send your first invitation
-              </div>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              2
-            </div>
-            <div>
-              <div className="font-medium">Manage user roles</div>
-              <div className="text-sm text-muted-foreground">
-                Assign appropriate roles (Admin or Member) to your users
-              </div>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              3
-            </div>
-            <div>
-              <div className="font-medium">Configure settings</div>
-              <div className="text-sm text-muted-foreground">
-                Customize your admin space in the Settings page
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

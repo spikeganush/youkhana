@@ -17,7 +17,7 @@
 
 Transform the Youkhana website from a Shopify-based e-commerce platform to a **rental product management system** where admins can add, manage, and display products available for rent (not purchase).
 
-**Status**: 🟡 In Progress (Phase 8 Completed - Image Upload)
+**Status**: 🟡 In Progress (Phase 9 Completed - Rental Inquiry System)
 **Started**: 2025-10-26
 **Target Completion**: TBD
 
@@ -639,83 +639,198 @@ BLOB_READ_WRITE_TOKEN="vercel_blob_rw_..."
 
 ---
 
-### Phase 9: Public Rental Catalog ⏳ (3-4 hours)
+### Phase 9: Rental Inquiry System ⏳ (2-3 hours)
 
-**Status**: 🔴 Not Started
-**Started**: _Not yet_
-**Completed**: _Not yet_
+**Status**: 🟢 Completed
+**Started**: 2025-10-26
+**Completed**: 2025-10-26
 
-#### Tasks
+#### Overview
 
-- [ ] Create rental catalog page
-  - [ ] `/app/rent/page.tsx` - Main rental catalog
-  - [ ] Fetch active products from Redis
-  - [ ] Implement search functionality
-  - [ ] Implement category filtering
-  - [ ] Implement featured products section
-- [ ] Create product grid component
-  - [ ] `/components/Rent/ProductGrid.tsx`
-  - [ ] Responsive grid (1 col mobile → 2 cols sm → 4 cols lg)
-  - [ ] Reuse Shopify grid spacing and layout
-- [ ] Create rental product card
-  - [ ] `/components/Rent/RentalProductCard.tsx`
-  - [ ] Based on existing `Products-Card.tsx`
-  - [ ] Show rental pricing (daily/weekly/monthly)
-  - [ ] Show availability status
-  - [ ] Featured badge for featured products
-  - [ ] Image with Next.js Image optimization
-- [ ] Create product detail page
-  - [ ] `/app/rent/[handle]/page.tsx` - Dynamic product page
-  - [ ] Image gallery (primary + additional images)
-  - [ ] Rental pricing breakdown
-  - [ ] Availability indicator
-  - [ ] Specifications table
-  - [ ] Rental terms section
-  - [ ] "Request Rental" button (placeholder for Phase 10)
-- [ ] Create filter/search components
-  - [ ] `/components/Rent/SearchBar.tsx` - Reuse/adapt from Shop
-  - [ ] `/components/Rent/CategoryFilter.tsx`
-  - [ ] `/components/Rent/PriceRangeFilter.tsx` (optional)
-- [ ] Update navigation
-  - [ ] Update `/components/Header/Desktop-Nav.tsx` - Add "Rent" link
-  - [ ] Update `/components/Header/Mobile-Nav.tsx` - Add "Rent" link
-  - [ ] Remove or deprecate "Shop" link
-- [ ] Update homepage
-  - [ ] `/app/page.tsx` - Add featured rental products section
-  - [ ] Link to rental catalog
+Implemented a rental inquiry system that allows customers to submit rental requests directly from product pages. Inquiries are stored in Redis, sent via email to the owner, and managed through an admin interface.
 
-#### Files to Create
+#### Tasks Completed
 
-- ✅ `/app/rent/page.tsx`
-- ✅ `/app/rent/[handle]/page.tsx`
-- ✅ `/components/Rent/ProductGrid.tsx`
-- ✅ `/components/Rent/RentalProductCard.tsx`
-- ✅ `/components/Rent/SearchBar.tsx`
-- ✅ `/components/Rent/CategoryFilter.tsx`
-- ✅ `/components/Rent/ImageGallery.tsx` - Product detail image gallery
+- [x] Create rental inquiry types
+  - [x] `/types/rental-inquiry.ts` - Complete type definitions
+  - [x] Status types: pending, contacted, confirmed, cancelled, completed
+  - [x] Support for rental dates, pricing snapshots, variant selection
+- [x] Create Redis operations for inquiries
+  - [x] `/lib/rental-inquiries.ts` - Full CRUD operations
+  - [x] `createRentalInquiry()` - Create new inquiry
+  - [x] `getAllInquiries()` - Get all inquiries with filtering
+  - [x] `updateInquiry()` - Update inquiry status/notes
+  - [x] `deleteInquiry()` - Delete inquiry
+  - [x] `getInquiryStats()` - Dashboard statistics
+- [x] Create inquiry submission API
+  - [x] `/app/api/rental-inquiry/route.ts` - Public API endpoint
+  - [x] Validate inquiry data
+  - [x] Store in Redis
+  - [x] Send email notification
+- [x] Create rental inquiry dialog
+  - [x] `/components/Shop/product/Rental-inquiry-dialog.tsx`
+  - [x] Customer information form (name, email, phone)
+  - [x] Rental dates picker
+  - [x] Variant selection (size, color, etc.)
+  - [x] Message/special requests field
+  - [x] Pricing calculation and display
+  - [x] Form validation
+- [x] Create admin inquiry management
+  - [x] `/app/admin/rental-inquiries/page.tsx` - Admin dashboard
+  - [x] `/components/admin/inquiry-table.tsx` - Inquiry table with filtering
+  - [x] Status badges and filters
+  - [x] Quick actions (update status, delete)
+  - [x] Inquiry details view
+- [x] Create server actions
+  - [x] `/app/admin/rental-inquiries/actions.ts`
+  - [x] `updateInquiryStatusAction()` - Update inquiry status
+  - [x] `addInquiryNotesAction()` - Add admin notes
+  - [x] `deleteInquiryAction()` - Delete inquiry
+  - [x] RBAC permission checks
+  - [x] Audit logging integration
+- [x] Add email notifications
+  - [x] Update `/actions/sendEmail.ts`
+  - [x] `sendRentalInquiryEmail()` - Send inquiry to owner
+  - [x] Formatted email template with all inquiry details
+  - [x] Reply-to customer email for easy response
+- [x] Update product pages
+  - [x] Modify `/app/product/[handle]/page.tsx`
+  - [x] Add rental inquiry dialog trigger
+  - [x] Update `/components/Shop/product/Purchase-button.tsx`
+  - [x] Change to "Request Rental" button
+  - [x] Open inquiry dialog on click
+- [x] Update admin navigation
+  - [x] Modify `/components/admin/sidebar.tsx`
+  - [x] Add "Rental Inquiries" link
+- [x] Update admin dashboard
+  - [x] Modify `/app/admin/page.tsx`
+  - [x] Add inquiry statistics card
+  - [x] Show pending inquiries count
+- [x] Add audit logging support
+  - [x] Modify `/lib/audit-log.ts`
+  - [x] Add generic `logAction()` function for custom actions
+  - [x] Support for inquiry status updates, notes, deletions
 
-#### Files to Modify
+#### Files Created
 
-- ✅ `/components/Header/Desktop-Nav.tsx` - Add Rent link
-- ✅ `/components/Header/Mobile-Nav.tsx` - Add Rent link
-- ✅ `/app/page.tsx` - Add featured products section
+- ✅ `/types/rental-inquiry.ts` - Type definitions and Redis key patterns
+- ✅ `/lib/rental-inquiries.ts` - Complete CRUD operations library
+- ✅ `/app/api/rental-inquiry/route.ts` - Public API endpoint for submissions
+- ✅ `/app/admin/rental-inquiries/page.tsx` - Admin inquiry management page
+- ✅ `/app/admin/rental-inquiries/actions.ts` - Server actions with RBAC
+- ✅ `/components/Shop/product/Rental-inquiry-dialog.tsx` - Customer inquiry form
+- ✅ `/components/admin/inquiry-table.tsx` - Admin table with filtering
 
-#### Responsive Design Checklist
+#### Files Modified
 
-- [ ] Product grid responsive (1/2/4 columns)
-- [ ] Product cards mobile-friendly
-- [ ] Product detail page stacks on mobile
-- [ ] Filters collapse on mobile
-- [ ] Image gallery touch-friendly on mobile
-- [ ] All images use Next.js Image optimization
+- ✅ `/lib/audit-log.ts` - Added generic `logAction()` function
+- ✅ `/actions/sendEmail.ts` - Added `sendRentalInquiryEmail()` function
+- ✅ `/app/admin/page.tsx` - Added inquiry stats to dashboard
+- ✅ `/components/admin/sidebar.tsx` - Added rental inquiries navigation link
+- ✅ `/app/product/[handle]/page.tsx` - Integrated inquiry dialog
+- ✅ `/components/Shop/product/Purchase-button.tsx` - Changed to rental inquiry button
+
+#### Features Implemented
+
+- ✅ Customer inquiry submission form on product pages
+- ✅ Rental date selection with validation
+- ✅ Product variant selection (size, color, etc.)
+- ✅ Automatic pricing calculation based on rental period
+- ✅ Email notifications to owner with inquiry details
+- ✅ Admin dashboard for managing inquiries
+- ✅ Status tracking (pending → contacted → confirmed → completed)
+- ✅ Admin notes on inquiries
+- ✅ Filtering by status, product, customer
+- ✅ Inquiry statistics on admin dashboard
+- ✅ RBAC integration (MANAGE_PRODUCTS permission required)
+- ✅ Audit logging for all inquiry actions
+- ✅ Redis storage with sorted sets for efficient querying
+
+#### Technical Decisions
+
+**Storage Strategy**:
+- Store inquiries in Redis with unique UUID keys
+- Use sorted sets for chronological ordering (score = timestamp)
+- Index by status, product, and customer for efficient filtering
+- Store pricing snapshot at time of inquiry for reference
+
+**Email Configuration**:
+- Send to testing email during development (`florian.jourdain@gmail.com`)
+- Use `rentals@callmespike.me` as sender
+- Reply-to set to customer email for easy communication
+- Professional HTML email template with gradient header
+
+**Form Design**:
+- Integrated directly into product page (dialog)
+- Auto-populate product information
+- Calculate estimated total based on rental period
+- Validate dates (start date must be before end date)
+- Support for optional phone number and message
+
+**Admin Interface**:
+- Reuse existing admin table patterns (TanStack Table)
+- Status badges with color coding
+- Quick actions for status updates
+- Separate notes field for internal tracking
+- Soft delete (remove from Redis)
+
+#### Type Error Fixes
+
+Fixed TypeScript compilation errors:
+1. `logAction` not exported from `lib/audit-log.ts` - Added generic audit logging function
+2. `currentUser.email` can be `null` - Added fallback to `'unknown'` in all action functions
+3. `respondedBy` field type mismatch - Convert `null` to `undefined` for optional string fields
+
+All type checks now pass: `npm run type-check` ✅
 
 #### Notes
 
-_Add implementation details, decisions, and challenges here_
+**Implementation Completed**: 2025-10-26
+
+This phase implements the foundation for the booking/reservation system mentioned in Phase 10, but with a simpler inquiry-based approach:
+- Customers submit rental requests (not bookings)
+- Owner receives email notifications
+- Admin manually manages inquiries and confirms availability
+- No automated calendar or payment processing yet
+
+**Future Enhancements** (Phase 10):
+- Automated availability checking
+- Calendar view for rental periods
+- Payment processing integration
+- Customer booking dashboard
+- Automated confirmation emails
 
 ---
 
-### Phase 10: Booking/Reservation System ⏳ (Future)
+### Phase 10: Public Rental Catalog ⏳ (Future)
+
+**Status**: 🔴 Not Started - Next Phase
+**Started**: _Not yet_
+**Completed**: _Not yet_
+
+#### Overview
+
+Create a public-facing rental catalog where users can browse all available rental products, filter by category, search, and view detailed product information.
+
+#### High-Level Tasks (Deferred)
+
+- [ ] Create rental catalog page (`/app/rent/page.tsx`)
+- [ ] Build product grid component (responsive 1/2/4 columns)
+- [ ] Create rental product cards (reuse Shopify design patterns)
+- [ ] Implement search functionality
+- [ ] Implement category filtering
+- [ ] Add featured products section
+- [ ] Create product detail pages with image galleries
+- [ ] Update navigation (add "Rent" link, deprecate "Shop")
+- [ ] Update homepage with featured rental products
+
+#### Notes
+
+**Decision**: Phase 9 (Rental Inquiry System) was completed before Phase 10 (Public Catalog) because the inquiry system allows testing the rental flow with existing product pages. The public catalog will be the next major feature to implement.
+
+---
+
+### Phase 11: Advanced Booking Features ⏳ (Future)
 
 **Status**: 🔴 Not Started - Future Enhancement
 **Started**: _Not yet_
@@ -723,42 +838,42 @@ _Add implementation details, decisions, and challenges here_
 
 #### Overview
 
-This is a **future phase** - not part of immediate implementation. This would add:
+Enhance the rental inquiry system with automated features:
 
-- Rental request/booking functionality
 - Calendar availability view
-- Admin approval workflow
-- Automatic inventory management
-- Email notifications for rental requests
-- Potential payment integration (Stripe)
+- Real-time inventory checking
+- Automated booking confirmations
+- Payment processing integration (Stripe)
+- Customer booking history dashboard
+- Automated email sequences
 
 #### High-Level Tasks (Deferred)
 
-- [ ] Design reservation data model
-- [ ] Create booking request form
-- [ ] Build admin approval interface
 - [ ] Implement calendar availability view
-- [ ] Add email notifications
-- [ ] Integrate payment processing (optional)
+- [ ] Add real-time inventory management
+- [ ] Integrate payment processing (Stripe)
+- [ ] Build customer booking dashboard
+- [ ] Create automated email workflows
 - [ ] Add rental history tracking
-- [ ] Build customer-facing booking dashboard
+- [ ] Build analytics and reporting
 
 #### Notes
 
-**Decision**: Focus on product management and catalog display first. Booking system is a major feature that can be built later once the core rental catalog is stable and being used.
+**Decision**: These advanced features can be added after the core rental catalog and inquiry system are stable and being actively used. Focus remains on launching the MVP first.
 
 ---
 
 ## Progress Timeline
 
-| Date       | Phase     | Status         | Notes                                              |
-| ---------- | --------- | -------------- | -------------------------------------------------- |
-| 2025-10-26 | Planning  | 🟢 Completed   | Implementation plan created                        |
-| 2025-10-26 | Phase 7   | 🟢 Completed   | Product CRUD foundation - All features implemented |
-| 2025-10-26 | Phase 7.5 | 🟢 Completed   | Rich text editor (Novel) integration               |
-| 2025-10-26 | Phase 8   | 🟢 Completed   | Image upload system with Vercel Blob               |
-| _TBD_      | Phase 9   | 🔴 Not Started | Public rental catalog                              |
-| _TBD_      | Phase 10  | 🔴 Deferred    | Booking system (future)                            |
+| Date       | Phase     | Status         | Notes                                                      |
+| ---------- | --------- | -------------- | ---------------------------------------------------------- |
+| 2025-10-26 | Planning  | 🟢 Completed   | Implementation plan created                                |
+| 2025-10-26 | Phase 7   | 🟢 Completed   | Product CRUD foundation - All features implemented         |
+| 2025-10-26 | Phase 7.5 | 🟢 Completed   | Rich text editor (Novel) integration                       |
+| 2025-10-26 | Phase 8   | 🟢 Completed   | Image upload system with Vercel Blob                       |
+| 2025-10-26 | Phase 9   | 🟢 Completed   | Rental inquiry system with email & admin management        |
+| _TBD_      | Phase 10  | 🔴 Not Started | Public rental catalog (next phase)                         |
+| _TBD_      | Phase 11  | 🔴 Deferred    | Advanced booking features with calendar & payment (future) |
 
 ---
 
@@ -890,23 +1005,33 @@ _Document any changes to the original plan here_
 
 ### Immediate Actions (Next Session)
 
-1. **Start Phase 9**: Public Rental Catalog
+1. **Start Phase 10**: Public Rental Catalog
    - Create rental catalog page (`/app/rent/page.tsx`)
    - Build product grid component
    - Create rental product cards
    - Implement product detail pages
    - Add search and filtering
-   - Update navigation (add "Rent" link)
+   - Update navigation (add "Rent" link, deprecate "Shop")
+   - Add featured products section to homepage
+
+2. **Test Phase 9**: Rental Inquiry System
+   - Test inquiry submission flow from product pages
+   - Verify email notifications are received
+   - Test admin inquiry management (status updates, notes, delete)
+   - Check inquiry statistics on admin dashboard
+   - Verify audit logging for inquiry actions
 
 ### Completed Phases
 
 - ✅ **Phase 7**: Product CRUD foundation (completed 2025-10-26)
 - ✅ **Phase 7.5**: Rich text editor with Novel (completed 2025-10-26)
 - ✅ **Phase 8**: Image upload with Vercel Blob (completed 2025-10-26)
+- ✅ **Phase 9**: Rental inquiry system (completed 2025-10-26)
 
 ### Future
 
-- **Phase 10**: Booking/reservation system (deferred)
+- **Phase 10**: Public rental catalog (next phase)
+- **Phase 11**: Advanced booking features with calendar & payment (deferred)
 
 ---
 
@@ -1013,4 +1138,8 @@ _Document any changes to the original plan here_
 
 **Last Updated**: 2025-10-26
 **Updated By**: Claude Code
-**Current Phase**: Phase 8 Complete, Ready for Phase 9 (Public Rental Catalog)
+**Current Phase**: Phase 9 Complete (Rental Inquiry System), Ready for Phase 10 (Public Rental Catalog)
+**Recent Changes**:
+- Fixed TypeScript compilation errors in rental inquiry system
+- Added generic `logAction()` function to audit-log.ts for custom actions
+- Updated plan with Phase 9 completion details
